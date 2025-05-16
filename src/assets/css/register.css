@@ -1,0 +1,440 @@
+@import "../css/style.css";
+.register-background {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #012970;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+@media (max-width: 575.98px) {
+  .register-background {
+    min-height: 115vh;
+  }
+}
+@media (min-width: 575.98px) {
+  .register-background {
+    align-items: center;
+  }
+}
+.register-background .register-view {
+  display: flex;
+  flex-direction: row;
+}
+.register-background .register-view .register-left-bg-main, .register-background .register-view .register-left-bg-store, .register-background .register-view .register-left-bg-chain-store, .register-background .register-view .register-left-bg-clinic, .register-background .register-view .register-left-bg-provider, .register-background .register-view .register-left-bg-company {
+  background-color: #fff;
+  border-radius: 10px 0px 0px 10px;
+  background-size: cover;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  flex: 1;
+}
+@media (max-width: 575.98px) {
+  .register-background .register-view .register-left-bg-main, .register-background .register-view .register-left-bg-store, .register-background .register-view .register-left-bg-chain-store, .register-background .register-view .register-left-bg-clinic, .register-background .register-view .register-left-bg-provider, .register-background .register-view .register-left-bg-company {
+    display: none;
+  }
+}
+@media (max-width: 767.98px) {
+  .register-background .register-view .register-left-bg-main, .register-background .register-view .register-left-bg-store, .register-background .register-view .register-left-bg-chain-store, .register-background .register-view .register-left-bg-clinic, .register-background .register-view .register-left-bg-provider, .register-background .register-view .register-left-bg-company {
+    height: 360px;
+  }
+}
+@media (max-width: 1399.98px) {
+  .register-background .register-view .register-left-bg-main, .register-background .register-view .register-left-bg-store, .register-background .register-view .register-left-bg-chain-store, .register-background .register-view .register-left-bg-clinic, .register-background .register-view .register-left-bg-provider, .register-background .register-view .register-left-bg-company {
+    width: 360px;
+    height: 490px;
+  }
+}
+@media (min-width: 1399.98px) {
+  .register-background .register-view .register-left-bg-main, .register-background .register-view .register-left-bg-store, .register-background .register-view .register-left-bg-chain-store, .register-background .register-view .register-left-bg-clinic, .register-background .register-view .register-left-bg-provider, .register-background .register-view .register-left-bg-company {
+    width: 450px;
+    height: 600px;
+  }
+}
+.register-background .register-view .register-left-bg-main .register-img-title, .register-background .register-view .register-left-bg-store .register-img-title, .register-background .register-view .register-left-bg-chain-store .register-img-title, .register-background .register-view .register-left-bg-clinic .register-img-title, .register-background .register-view .register-left-bg-provider .register-img-title, .register-background .register-view .register-left-bg-company .register-img-title {
+  min-height: 50;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  color: white;
+  margin-left: 15px;
+  margin-top: 5%;
+  font-size: 16px;
+  font-family: Nunito;
+  text-transform: uppercase;
+}
+.register-background .register-view .register-left-bg-main .register-img-content, .register-background .register-view .register-left-bg-store .register-img-content, .register-background .register-view .register-left-bg-chain-store .register-img-content, .register-background .register-view .register-left-bg-clinic .register-img-content, .register-background .register-view .register-left-bg-provider .register-img-content, .register-background .register-view .register-left-bg-company .register-img-content {
+  margin-left: 30px;
+  margin-right: 30px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.register-background .register-view .register-left-bg-main .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-store .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-chain-store .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-clinic .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-provider .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-company .register-img-content .register-img-content-line {
+  color: white;
+  font-family: Nunito;
+  font-weight: bold;
+}
+@media (max-width: 767.98px) {
+  .register-background .register-view .register-left-bg-main .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-store .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-chain-store .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-clinic .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-provider .register-img-content .register-img-content-line, .register-background .register-view .register-left-bg-company .register-img-content .register-img-content-line {
+    font-size: x-large;
+  }
+}
+.register-background .register-view .register-left-bg-main .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-store .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-chain-store .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-clinic .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-provider .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-company .register-img-content .register-img-content-des {
+  color: white;
+  font-family: Nunito;
+  margin-top: 5%;
+}
+@media (max-width: 767.98px) {
+  .register-background .register-view .register-left-bg-main .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-store .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-chain-store .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-clinic .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-provider .register-img-content .register-img-content-des, .register-background .register-view .register-left-bg-company .register-img-content .register-img-content-des {
+    font-size: medium;
+  }
+}
+.register-background .register-view .register-left-bg-main .register-img-footer, .register-background .register-view .register-left-bg-store .register-img-footer, .register-background .register-view .register-left-bg-chain-store .register-img-footer, .register-background .register-view .register-left-bg-clinic .register-img-footer, .register-background .register-view .register-left-bg-provider .register-img-footer, .register-background .register-view .register-left-bg-company .register-img-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5%;
+}
+.register-background .register-view .register-left-bg-main .register-img-footer .register-img-icon-phone, .register-background .register-view .register-left-bg-store .register-img-footer .register-img-icon-phone, .register-background .register-view .register-left-bg-chain-store .register-img-footer .register-img-icon-phone, .register-background .register-view .register-left-bg-clinic .register-img-footer .register-img-icon-phone, .register-background .register-view .register-left-bg-provider .register-img-footer .register-img-icon-phone, .register-background .register-view .register-left-bg-company .register-img-footer .register-img-icon-phone {
+  font-size: large;
+  color: white;
+}
+.register-background .register-view .register-left-bg-main .register-img-footer .register-img-footer-hotline, .register-background .register-view .register-left-bg-store .register-img-footer .register-img-footer-hotline, .register-background .register-view .register-left-bg-chain-store .register-img-footer .register-img-footer-hotline, .register-background .register-view .register-left-bg-clinic .register-img-footer .register-img-footer-hotline, .register-background .register-view .register-left-bg-provider .register-img-footer .register-img-footer-hotline, .register-background .register-view .register-left-bg-company .register-img-footer .register-img-footer-hotline {
+  color: white;
+  font-family: Nunito;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+.register-background .register-view .register-left-bg-main .register-img-footer .register-img-footer-phone, .register-background .register-view .register-left-bg-store .register-img-footer .register-img-footer-phone, .register-background .register-view .register-left-bg-chain-store .register-img-footer .register-img-footer-phone, .register-background .register-view .register-left-bg-clinic .register-img-footer .register-img-footer-phone, .register-background .register-view .register-left-bg-provider .register-img-footer .register-img-footer-phone, .register-background .register-view .register-left-bg-company .register-img-footer .register-img-footer-phone {
+  color: white;
+  font-family: Nunito;
+  font-weight: bold;
+}
+/* .register-background .register-view .register-left-bg-main {
+  background-image: url("../../assets/image/register-img-store.png");
+}
+.register-background .register-view .register-left-bg-store {
+  background-image: url("../../assets/image/register-img-store.png");
+}
+.register-background .register-view .register-left-bg-chain-store {
+  background-image: url("../../assets/image/register-img-store.png");
+}
+.register-background .register-view .register-left-bg-provider {
+  background-image: url("../../assets/image/register-img-store.png");
+}
+.register-background .register-view .register-left-bg-clinic {
+  background-image: url("../../assets/image/register-img-store.png");
+}
+.register-background .register-view .register-left-bg-company {
+  background-image: url("../../assets/image/register-img-store.png");
+} */
+.register-background .register-view .register-form {
+  display: flex;
+  background-color: #fff;
+  padding: 0rem 1.5rem 0px 0.75rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+@media (max-width: 575.98px) {
+  .register-background .register-view .register-form .register-form-desktop {
+    display: none;
+  }
+}
+@media (min-width: 575.98px) {
+  .register-background .register-view .register-form .register-form-moblie {
+    display: none;
+  }
+}
+@media (max-width: 374.98px) {
+  .register-background .register-view .register-form {
+    min-width: 300px;
+    width: 100%;
+    height: 450px;
+  }
+}
+@media (min-width: 374.98px) {
+  .register-background .register-view .register-form {
+    padding-top: 10px;
+    width: 100%;
+    height: 490px;
+  }
+}
+@media (min-width: 575.98px) {
+  .register-background .register-view .register-form {
+    min-width: 300px;
+    height: 490px;
+  }
+}
+@media (min-width: 767.98px) {
+  .register-background .register-view .register-form {
+    width: 400px;
+    height: 490px;
+  }
+}
+@media (min-width: 991.98px) {
+  .register-background .register-view .register-form {
+    width: 450px;
+    height: 490px;
+  }
+}
+@media (min-width: 1399.98px) {
+  .register-background .register-view .register-form {
+    width: 450px;
+    height: 600px;
+  }
+}
+.register-background .register-view .register-form .register-logo {
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  align-items: center;
+}
+@media (max-width: 575.98px) {
+  .register-background .register-view .register-form .register-logo {
+    display: none;
+  }
+}
+.register-background .register-view .register-form .register-logo .logo {
+  width: 70px;
+}
+.register-background .register-view .register-form .button-container {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+.register-background .register-view .register-form .floating-label {
+  font-size: 14px;
+  color: #7e7e7e;
+  height: 4rem;
+  padding: 0.375rem 0rem 0.375rem 0.75rem;
+}
+
+@media (max-width: 374.98px) {
+  .register-background .register-view .register-form .floating-label {
+    height: fit-content;
+    padding: 0.25rem 0rem 0.375rem 0.75rem;
+  }
+}
+.register-background .register-view .register-form .floating-label .form-control, .register-background .register-view .register-form .floating-label .form-select {
+  border-width: 0px 0px 2px 0px;
+  border-radius: 0;
+  padding: 0rem 0rem;
+}
+.register-background .register-view .register-form .floating-label .form-control::placeholder, .register-background .register-view .register-form .floating-label .form-select::placeholder {
+ font-size: 13px;
+}
+
+.register-background .register-view .register-form .floating-label .form-control:focus, .register-background .register-view .register-form .floating-label .form-select:focus {
+  border-width: 0px 0px 2px 0px;
+  box-shadow: 0 0 0 0;
+}
+.register-background .register-view .register-form .form-floating > .form-control {
+  height: 2.75rem;
+}
+
+.register-background .register-view .register-form .form-floating > .form-control:focus, .register-background .register-view .register-form .form-floating > .form-control:not(:placeholder-shown) {
+  padding-top: 1.625rem;
+  padding-bottom: 0.5rem;
+}
+
+.register-background .register-view .register-form .form-floating > .form-control:focus ~ label, .register-background .register-view .register-form .form-floating > .form-control:not(:placeholder-shown) ~ label, .register-background .register-view .register-form .form-floating > .form-select ~ label {
+  opacity: 1;
+  color: black;
+  font-weight: bold;
+  transform: scale(0.85) translateY(-0.35rem) translateX(0.15rem);
+}
+.register-background .register-view .register-form .form-name-address {
+  display: flex;
+  align-items: center;
+}
+.register-background .register-view .register-form .form-name-address .form-name {
+  flex: 2;
+}
+.register-background .register-view .register-form .form-name-address .form-address {
+  flex: 1;
+}
+.register-background .register-view .register-form .form-name-address .form-address .form-control-address {
+  border-radius: 0;
+  /* padding-top: 1.25rem; */
+  padding-bottom: 0em;
+  border-bottom: none;
+}
+.register-background .register-view .register-form .form-phone-address {
+  display: flex;
+  align-items: center;
+}
+.register-background .register-view .register-form .form-phone-address .form-phone {
+  flex: 1;
+}
+.register-background .register-view .register-form .form-phone-address .form-address {
+  flex: 1;
+}
+.register-background .register-view .register-form .form-phone-address .form-address .form-control-address {
+  border-radius: 0;
+  padding-top: 1.25rem;
+  padding-bottom: 0em;
+}
+.register-background .register-view .register-form .form-phone-email {
+  display: flex;
+  align-items: center;
+}
+.register-background .register-view .register-form .form-phone-email .form-phone {
+  flex: 1;
+}
+.register-background .register-view .register-form .form-phone-email .form-email {
+  flex: 2;
+}
+.register-background .register-view .register-form .form-password-container {
+  display: flex;
+  align-items: center;
+}
+.register-background .register-view .register-form .form-password-container .form-password {
+  flex: 1;
+}
+.register-background .register-view .register-form .form-password-container .button-visible-password {
+  width: fit-content;
+  height: fit-content;
+  padding: 0;
+}
+.register-background .register-view .register-form .form-password-container .button-visible-password .icon-password {
+  width: 21px;
+  height: 20px;
+  opacity: 0.3;
+}
+.register-background .register-view .register-form .form-password-container .button-visible-password .icon-password:hover {
+  width: 21px;
+  height: 20px;
+  opacity: 0.6;
+}
+.register-background .register-view .register-form .form-verify {
+  display: flex;
+  align-items: center;
+}
+.register-background .register-view .register-form .form-verify .form-verify-input {
+  flex: 1;
+}
+.register-background .register-view .register-form .form-verify .form-verify-button {
+  flex: 1;
+  align-items: flex-end;
+}
+.register-background .register-view .register-form .form-verify .form-verify-button:hover {
+  text-decoration-line: underline;
+}
+.register-background .register-view .register-form .term {
+  margin-left: 0.75rem;
+}
+.register-background .register-view .register-form .button-register {
+  background-color: #0084ff;
+  color: #fff;
+  border: #0084ff;
+  margin: 0.5rem 0.75rem 0.5rem 0.5rem;
+  font-weight: 500;
+  height: 40px;
+}
+.register-background .register-view .register-form .button-register:hover {
+  background-color: #006fd6;
+  color: #fff;
+}
+.register-background .register-view .register-form .button-register:focus {
+  background-color: #0084ff;
+  color: #fff;
+}
+.register-background .register-view .register-form .footer-login-container {
+  display: flex;
+  margin: 5px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+.register-background .register-view .register-form .footer-login-container .footer-text, .register-background .register-view .register-form .footer-login-container .footer-login {
+  font-size: 16px;
+}
+@media (max-width: 575.98px) {
+  .register-background .register-view .register-form .footer-login-container .footer-text, .register-background .register-view .register-form .footer-login-container .footer-login {
+    font-size: 14px;
+  }
+}
+.register-background .register-view .register-form .footer-login-container .footer-login {
+  color: blue;
+}
+.register-background .register-view .register-form .footer-login-container .footer-login:hover {
+  text-decoration: underline;
+}
+.register-background .header-content {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+@media (min-width: 575.98px) {
+  .register-background .header-content {
+    display: none;
+  }
+}
+.register-background .header-content .register-title {
+  min-height: 50;
+  display: flex;
+  font-weight: bold;
+  color: white;
+  margin-top: 5%;
+  font-size: 16px;
+  font-family: Nunito;
+  text-transform: uppercase;
+}
+.register-background .header-content .register-content {
+  margin-left: 1rem;
+  font-family: Nunito;
+  font-size: 13px;
+  color: white;
+}
+.register-background .app-store {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.register-background .app-store .icon_app_store {
+  margin: 10px 10px 0px 10px;
+  height: 6vh;
+}
+.register-background .app-store .icon_app_store:hover {
+  cursor: pointer;
+}
+@media (min-width: 768.02px) {
+  .register-background .app-store {
+    display: none;
+  }
+}
+.button-company {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-weight: normal;
+  color: black;
+  font-size: 13px;
+}
+.button-company .icon-touch {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+  filter: #0084ff;
+}
+@media (max-width: 575.98px) {
+  .button-company .icon-touch {
+    width: 40px;
+    height: 40px;
+  }
+}
+.button-company:hover .icon-touch {
+  filter: #fff;
+}

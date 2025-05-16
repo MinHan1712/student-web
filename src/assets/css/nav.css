@@ -1,0 +1,293 @@
+.nav {
+    position: fixed;
+    width: 100vw;
+    z-index: 999;
+}
+
+.nav .bottom-header {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    height: 55px;
+    padding-left: 20px;
+    background-color: #012970;
+    color: #fff;
+}
+
+.nav .bottom-header .menu-container {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nav .bottom-header .menu-container .button-dashboard {
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 20px;
+    color: #fff;
+}
+
+.nav .bottom-header .menu-container .title-dashboard {
+    color: #fff;
+    font-size: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.nav .bottom-header .header-left {
+    flex: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav .bottom-header .header-left .container-store-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.nav .bottom-header .header-left .container-store-name .icon-home {
+    color: #fff;
+    font-size: 24px;
+}
+
+.nav .bottom-header .header-left .container-store-name .text-home {
+    font-size: 20px;
+    color: #fff;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+.nav .bottom-header .header-left .button-invoice {
+    background-color: #000;
+    border-width: 0px;
+    font-weight: bold;
+    flex-direction: row;
+    align-items: center;
+    display: flex;
+}
+
+.nav .bottom-header .header-left .info {
+    display: flex;
+    flex-direction: row-reverse;
+    flex: 1;
+    align-items: center;
+}
+
+.nav .bottom-header .header-left .info .left-item {
+    display: flex;
+    margin-left: 30px;
+    margin-right: 20px;
+}
+
+.nav .bottom-header .header-left .info .left-item .icon_cart {
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+}
+
+.nav .bottom-header .header-left .info .left-item .help {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nav .bottom-header .header-left .info .left-item .help .icon {
+    margin: 5px;
+}
+
+.nav .bottom-header .header-left .info .left-item .menu-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.box-info{
+    position: fixed;
+    padding: 10px;
+    border-right: 2px solid #f2f2f2;
+    border-bottom: 2px solid #f2f2f2;
+}
+.nav .bottom-header .header-left .info .left-item .user-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav .bottom-header .header-left .info .left-item .user-info .name-user {
+    color: white;
+    font-size: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ant-popover-inner-content {
+    padding: 5px;
+}
+
+.ant-popover-inner-content .menu-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 5px;
+    margin: 2px;
+}
+
+.ant-popover-inner-content .menu-item .icon-menu {
+    font-size: 20px;
+    margin: 5px;
+}
+
+.ant-popover-inner-content .menu-item .title {
+    font-size: 16px;
+}
+
+.ant-popover-inner-content .menu-item:hover {
+    background-color: #012970;
+    border-radius: 1px;
+    color: white;
+}
+
+.ant-popover-inner-content .menu-item:hover .title {
+    background-color: #012970;
+    border-radius: 1px;
+    color: white;
+}
+
+.ant-popover-inner-content .menu-item-image {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    padding: 5px;
+    margin: 2px;
+}
+
+.ant-popover-inner-content .menu-item-image .icon_app_store {
+    height: 35px;
+    cursor: pointer;
+}
+
+.list-noti .active {
+    color: #fff;
+    background-color: #73c04e;
+}
+
+.list-noti:hover {
+    cursor: pointer;
+}
+
+.ant-badge {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, .65);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    -webkit-font-feature-settings: "tnum";
+    font-feature-settings: "tnum", "tnum";
+    position: relative;
+    display: inline-block;
+    color: unset;
+    line-height: 1;
+}
+
+.ant-scroll-number {
+    overflow: hidden;
+}
+
+.ant-badge-count,
+.ant-badge-dot,
+.ant-badge .ant-scroll-number-custom-component {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    -webkit-transform: translate(50%, -50%);
+    -ms-transform: translate(50%, -50%);
+    transform: translate(50%, -50%);
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+}
+
+.ant-badge-multiple-words {
+    padding: 0 8px;
+}
+
+.ant-badge-count {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    color: #fff;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    white-space: nowrap;
+    text-align: center;
+    background: #f5222d;
+    border-radius: 10px;
+    -webkit-box-shadow: 0 0 0 1px #fff;
+    box-shadow: 0 0 0 1px #fff;
+}
+
+.ant-popover-inner-content .menu-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 5px;
+    margin: 2px;
+}
+
+.ant-popover-inner-content .menu-item .title {
+    font-size: 16px !important;
+}
+
+.title {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    color: #000;
+}
+
+.ant-popover-inner-content .menu-item .icon-menu {
+    font-size: 20px;
+    margin: 5px;
+}
+
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
+    padding: 0 !important;
+}
+
+.ant-layout-sider-light .ant-layout-sider-trigger, .ant-layout-sider-light .ant-layout-sider-zero-width-trigger {
+    color: rgba(0,0,0,.65);
+    background: #fff;
+}
+.ant-layout-sider-trigger {
+    position: fixed;
+    bottom: 0;
+    z-index: 1;
+    height: 48px;
+    color: #fff;
+    line-height: 48px;
+    text-align: center;
+    background: #002140;
+    cursor: pointer;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+}

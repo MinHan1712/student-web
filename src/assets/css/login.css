@@ -1,0 +1,263 @@
+.login-info {
+    font-family: Nunito;
+    display: flex;
+    flex-direction: row;
+    background-color: #012970;
+    min-height: 845px;
+}
+
+@media (max-width: 820px) {
+    .login-info {
+        flex-direction: column-reverse;
+    }
+}
+
+.login-info .introduction {
+    display: flex;
+}
+
+@media (min-width: 820px) {
+    .login-info .introduction {
+        min-height: 70vh;
+        /* flex: 2; */
+    }
+}
+
+@media (min-width: 820px) and (min-width: 992px) {
+    .login-info .introduction {
+        min-height: 98vh;
+    }
+}
+
+.login-info .introduction .image-container {
+    height: 60vh;
+}
+
+@media (max-width: 992px) {
+    .login-info .introduction .image-container {
+        margin-top: 0px !important;
+        height: 40vh;
+        margin-left: 15px;
+    }
+}
+
+.login-info .introduction .slide-carousel {
+    width: 100%;
+}
+
+.login-info .introduction .slide-carousel .description-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10vw;
+}
+
+@media (max-width: 992px) {
+    .login-info .introduction .slide-carousel .description-container {
+        margin-left: 2rem;
+        margin-bottom: 50px;
+    }
+}
+
+@media (max-width: 820px) {
+    .login-info .introduction .slide-carousel .description-container {
+        margin-left: 15vw;
+    }
+}
+
+.login-info .introduction .slide-carousel .description-container .title {
+    font-size: 24px;
+    text-transform: uppercase;
+    color: white;
+    margin: 2px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .login-info .introduction .slide-carousel .description-container .title {
+        margin-bottom: 0px;
+        margin-top: 0px;
+    }
+}
+
+@media (max-width: 820px) {
+    .login-info .introduction .slide-carousel .description-container .title {
+        font-size: 18px;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.login-info .introduction .slide-carousel .description-container .description-detail {
+    font-size: 20px;
+    color: white;
+    margin: 2px;
+}
+
+@media (max-width: 820px) {
+    .login-info .introduction .slide-carousel .description-container .description-detail {
+        font-size: 16px;
+    }
+}
+
+.login-info .introduction .slide-carousel .description-container .bt-registration {
+    width: 150px;
+    padding: 5px;
+    height: 50px;
+    font-size: 18px;
+    margin: 10px 0px 10px 0px;
+    background-color: #05a098;
+    color: white;
+    border-width: 0px;
+}
+
+.login-info .introduction .slide-carousel .description-container .free-trail {
+    font-size: 15px;
+    color: white;
+}
+
+.login-info .introduction .slide-carousel .image-container {
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.login-info .introduction .slide-carousel .image-container .slide-image {
+    width: 45vw;
+    object-fit: scale-down;
+    justify-self: center;
+}
+
+@media only screen and (max-width: 820px) {
+    .login-info .introduction .slide-carousel .image-container .slide-image {
+        width: 95vw;
+        margin-top: 0px;
+    }
+}
+
+.login-info .login-form-container {
+    display: flex;
+    z-index: 2;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 150px auto;
+    padding: 0 20px 0;
+}
+
+@media (max-width: 820px) {
+    .login-info .login-form-container {
+        flex: 1;
+    }
+}
+
+.login-info .login-form-container .app-store {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.login-info .login-form-container .app-store .icon_app_store {
+    height: 45px;
+    margin: 2%;
+    padding: 0 30px;
+}
+
+.login-info .login-form-container .app-store .icon_app_storehover {
+    cursor: pointer;
+}
+
+@media (max-width: 820px) {
+    .login-info .login-form-container .app-store .icon_app_store {
+        height: 42px;
+    }
+}
+
+.login-info .login-form-container .login-form {
+    width: 380px;
+    height: 400px;
+    border-radius: 10px;
+    background-color: white;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+@media (max-width: 820px) {
+    .login-info .login-form-container .login-form {
+        width: 320px;
+    }
+}
+
+.login-info .login-form-container .login-form .login-logo {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-info .login-form-container .login-form .login-logo .logo {
+   width: 50px;
+    height: 50px;
+}
+
+@media (max-width: 820px) {
+    .login-info .login-form-container .login-form .login-logo .logo {
+        height: 40px;
+    }
+}
+
+.login-info .login-form-container .login-form .login-form-forgot {
+    padding-top: 5px;
+    float: right;
+    color: #012970;
+    text-decoration: underline;
+}
+
+.login-info .login-form-container .login-form .view-error {
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+.login-info .login-form-container .login-form .login-error {
+    color: red;
+    font-size: normal;
+    text-align: center;
+}
+
+
+
+.login-info .login-form-container .login-form .login-form-button {
+    width: 100%;
+    background-color: #012970;
+    border-width: 0px;
+}
+
+.login-info .login-form-container .login-form .textRegister {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-info .login-form-container .login-form .textRegister .txtLinkRegister {
+    color: #012970;
+}
+
+.login-info .login-form-container .login-form .textRegister .txtAskRegister {
+    float: right;
+    text-align: center;
+    padding-right: 35px;
+    padding-left: 5px;
+}
+
+.login-info .login-form-container .login-form .contaiImage {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.login-info .login-form-container .login-form .contaiImage .iconApp {
+    width: 140px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}

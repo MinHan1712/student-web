@@ -1,0 +1,53 @@
+.container-provider .form-filter-provider .wrapper-form .wrapper-column{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+  }
+  
+.tab-container-provider {
+    height: 510px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+  }
+  
+  .history-provider-container {
+    display: flex;
+    flex: 1 1;
+    flex-direction: column;
+  }
+  
+  .history-provider-container .history-provider-table {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1 1;
+    height: 500px;
+    overflow-y: scroll;
+  }
+  
+  .tab-container-provider .tab-pane-container {
+    flex: 1 1;
+    display: flex;
+    height: 470px;
+  }
+  
+  .debt-provider-container {
+    display: flex;
+    flex: 1 1;
+    flex-direction: column;
+  }
+  
+  
+  .debt-provider-container .debt-provider-container-title {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .debt-provider-container .debt-provider-container-table {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1 1;
+  }
+  

@@ -1,0 +1,218 @@
+.container-provider .form-filter-provider,
+.container-page .form-filter {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-provider .form-filter-provider .wrapper-form,
+.container-page .form-filter .wrapper-form {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  position: relative;
+  height: auto;
+  margin-right: 0;
+  margin-left: 0;
+  zoom: 1;
+  box-sizing: border-box;
+}
+
+.form-filter .filter-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+}
+
+/* .form-filter .button{
+  display: inline-block !important;
+} */
+
+.group-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+}
+
+.group-type:hover {
+  cursor: pointer;
+  background-color: #012970;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.group-type img {
+  width: 100px;
+  margin: 10px 0;
+}
+
+.group-type h3 {
+  margin: 10px 0;
+  font-weight: 600;
+}
+
+.cus-group-container .cus-info-body {
+  display: flex;
+}
+
+.cus-group-container .cus-info-body .cus-info-condition,
+.cus-group-container .cus-info-body .cus-info-empty,
+.cus-group-container .cus-info-body .cus-info-group {
+  flex: 1 1;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 0 10px 10px;
+}
+
+.cus-group-container .cus-info-body .cus-info-empty {
+  margin-left: 10px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.cus-group-container .cus-info-body .cus-info-empty .icon-condition {
+  width: 100px;
+  height: 100px;
+  resize: contain;
+}
+
+.cus-group-container .cus-info-body .cus-info-empty .icon-condition:hover {
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+}
+
+/*inv*/
+.check-inv .check-inv-search {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  justify-items: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.check-inv .check-inv-search {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  justify-items: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.check-inv .check-inv-search .check-inv-search-drug {
+  display: flex;
+  flex: 1 1;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.check-inv .check-inv-search .check-inv-button-container {
+  display: flex;
+  flex: 1 1;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* .ant-layout-sider-has-trigger {
+  padding-bottom: 48px;
+}
+
+.ant-layout.ant-layout-has-sider>.ant-layout, .ant-layout.ant-layout-has-sider>.ant-layout-content {
+  overflow-x: hidden;
+}
+.ant-layout, .ant-layout * {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.ant-layout {
+  display: flex;
+  -ms-flex: auto;
+  flex: auto;
+  flex-direction: column;
+  min-height: 0;
+  background: #f0f2f5;
+}
+.ant-layout-sider-children {
+  height: 100%;
+  margin-top: -0.1px;
+  padding-top: 0.1px;
+}
+.box-info {
+  position: fixed;
+  padding: 10px;
+  border-right: 2px solid #f2f2f2;
+  border-bottom: 2px solid #f2f2f2;
+}
+
+.box-info-compact {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px 20px 20px;
+  border-bottom: 2px solid #f2f2f2;
+}*/
+
+.box-info .user-info {
+  display: flex;
+}
+
+.box-info .user-info .user-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.box-info .user-info .text-info {
+  margin-left: 10px;
+}
+
+.box-info .user-info .text-info .user-name {
+  font-weight: 600;
+  line-height: 17px;
+}
+.store-information {
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.store-information .logo-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ant-upload.ant-upload-select {
+  display: inline-block;
+}
+.store-information .ant-upload {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5;
+  list-style: none;
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum", "tnum";
+  outline: 0;
+}
