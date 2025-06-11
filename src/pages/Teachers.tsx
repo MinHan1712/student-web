@@ -172,7 +172,7 @@ const Teachers: React.FC = () => {
               onChange={(size: number) => {
                 setTeachersReq({
                   ...teachersReq,
-                  page: 1,
+                  page: 0,
                   size: size
                 });
                 setPageSize(size);

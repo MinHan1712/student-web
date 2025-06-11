@@ -2,7 +2,7 @@
   "name": "medicine-web",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8080/api/",
+  "proxy": "http://localhost:8080/api",
   "dependencies": {
     "@chakra-ui/react": "^3.2.2",
     "@emotion/react": "^11.13.5",

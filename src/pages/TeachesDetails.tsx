@@ -7,7 +7,7 @@ import getDetailsApi from "../apis/get.details.api";
 import { renderText } from "../components/common";
 import { CourseStatuses, QualificationTeaches, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
-import { IClassRegistrationsDTO, IClassRegistrationsFilter, ITeacherDTO } from "../interfaces/course";
+import { IClassDTO, IClassFilter, IClassRegistrationsDTO, IClassRegistrationsFilter, ITeacherDTO } from "../interfaces/course";
 
 const TeachesDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -16,15 +16,16 @@ const TeachesDetails: React.FC = () => {
   const idTeachers = params.get("id") || "";
 
   const [teaches, setTeaches] = useState<ITeacherDTO>({ id: 0 });
-  const [classRegis, setClassRegis] = useState<IResponseN<IClassRegistrationsDTO[]>>();
+  const [classRegis, setClassRegis] = useState<IResponseN<IClassDTO[]>>();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
 
-  const [classRegisReq, setClassRegisReq] = useState<IClassRegistrationsFilter>({
+  const [classRegisReq, setClassRegisReq] = useState<IClassFilter>({
     page: 0,
     size: 20,
-    "teachers.equals": idTeachers
+    "teachersId.equals": idTeachers
+    // "teachers.equals": idTeachers
   });
 
   const toQueryString = (params: Record<string, any>): string => {
@@ -50,7 +51,7 @@ const TeachesDetails: React.FC = () => {
     setLoading(true);
     try {
       const fullQuery = toQueryString(classRegisReq);
-      const response = await getApi.getClassRegistrations(fullQuery);
+      const response = await getApi.getClasses(fullQuery);
       setClassRegis(response);
     } catch (err) {
       console.log(err);
@@ -231,7 +232,7 @@ const TeachesDetails: React.FC = () => {
               onChange={(size: number) => {
                 setClassRegisReq({
                   ...classRegisReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSize(size);

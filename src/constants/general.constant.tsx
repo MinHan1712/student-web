@@ -135,60 +135,10 @@ export const DistrictType = [
   },
 ];
 
-export const sexType = [
-  { value: 'false', label: 'Nữ' },
-  { value: 'true', label: 'Nam' }
-]
-
-export const CustonerSource = [
-  { value: 'phone', label: 'Điện thoại' },
-  { value: 'truc tiep', label: 'Trực tiếp' },
-  { value: 'qua gioi thieu', label: 'Qua giới thiệu' },
-  { value: 'facebook', label: 'Facebook' },
-  { value: 'website', label: 'Website' },
-];
-
-export const CustonerGroupType = [
-  { value: '', label: 'Tất cả' },
-  { value: 'DYNAMIC', label: 'Tự động' },
-  { value: 'FIXED', label: 'Cố định' },
-];
-
 export const StatusType = [
   { value: true, label: "Hoạt động", color: 'green' },
-  { value: false, label: "Ngừng", color: 'red' },
+  { value: false, label: "Không hoạt động", color: 'red' },
 ];
-
-export const vat = [
-  { name: "vat_percent", value: "0", label: "0%" },
-  { name: "vat_percent", value: "5", label: "5%" },
-  { name: "vat_percent", value: "8", label: "8%" },
-  { name: "vat_percent", value: "10", label: "10%" },
-];
-
-export const ImportStatus = [
-  { value: "null", label: "Tất cả", name: "" },
-  { value: "0", label: "Đã hủy", name: "red" },
-  { value: "1", label: "Đã hoàn thành", name: "green" },
-  { value: "2", label: "Thanh toán một phần", name: "yellow" },
-  { value: "3", label: "Chưa thanh toán", name: "red" }
-]
-
-export const ImportImportType = [
-  { value: "", label: "Tất cả" },
-  { value: "YCNK", label: "Yêu cầu nhập kho" },
-  { value: "TLK", label: "Trả lại kho" },
-  { value: "TLBH", label: "Trả lại bán hàng" },
-  { value: "KH", label: "Kiểm kho" }
-]
-
-export const PayMethod = [
-  { value: "", label: "Tất cả" },
-  { value: "0", label: "Tiền mặt" },
-  { value: "2", label: "Đã duyệt" },
-  { value: "1", label: "Thanh toán một phần" },
-  { value: "3", label: "Chưa thanh toán" }
-]
 
 export const PositionTeaches = [
   { value: "", label: "Tất cả" },
@@ -206,9 +156,10 @@ export const QualificationTeaches = [
 
 export const StudentStatuses = [
   { value: "", label: "Tất cả" },
+  { value: "Studying", label: "Đang học", color: "blue" },
   { value: "Withdrawn", label: "Thôi học", color: "red" },
   { value: "Graduated", label: "Đã tốt nghiệp", color: "green" },
-  { value: "Deferment", label: "Tạm hoãn", color: "orange" }
+  { value: "Deferment", label: "Tạm hoãn", color: "orange" },
 ];
 
 export const ClassTypes = [
@@ -243,3 +194,60 @@ export const CourseStatuses = [
   { value: "ExamPostponed", label: "Hoãn thi", color: "#9E9E9E" }, // Màu xám cho "Hoãn thi"
   { value: "AwaitingGrade", label: "Chờ điểm", color: "#2196F3" }, // Màu xanh dương cho "Chờ điểm"
 ];
+
+
+export const letterGradeOptions = [
+  { value: 'A', label: 'A - Xuất sắc' },
+  { value: 'APlus', label: 'A+ - Xuất sắc vượt trội' },
+  { value: 'B', label: 'B - Giỏi' },
+  { value: 'BPlus', label: 'B+ - Giỏi khá' },
+  { value: 'C', label: 'C - Khá' },
+  { value: 'CPlus', label: 'C+ - Khá trung bình' },
+  { value: 'D', label: 'D - Trung bình' },
+  { value: 'DPlus', label: 'D+ - Trung bình yếu' },
+  { value: 'F', label: 'F - Rớt' },
+  { value: 'FPlus', label: 'F+ - Rớt (có thể học cải thiện)' },
+];
+
+export const evaluationOptions = [
+  { value: 'Pass', label: 'Đạt' },
+  { value: 'Retake', label: 'Học lại' },
+  { value: 'Deferment', label: 'Bảo lưu' },
+];
+
+export const evaluationMap: Record<string, string> = {
+  Excellent: 'Xuất sắc',
+  Good: 'Tốt',
+  Fair: 'Khá',
+  Average: 'Trung bình',
+  Weak: 'Yếu',
+  Poor: 'Kém',
+};
+
+export const classificationMap: Record<number, string> = {
+  0: 'Xuất sắc',
+  1: 'Tốt',
+  2: 'Khá',
+  3: 'Trung bình',
+  4: 'Yếu',
+  5: 'Kém',
+};
+
+export const evaluationLabelMap: Record<string, string> = {
+  Good: 'Tốt',
+  Fair: 'Khá',
+  Average: 'Trung bình',
+  Poor: 'Yếu',
+};
+
+export const typeOptions = [
+  { value: 'Scholarship', label: 'Học bổng', color: '#4CAF50' },    // Màu xanh lá
+  { value: 'Warning', label: 'Cảnh báo', color: '#FF9800' },        // Màu cam
+  { value: 'Graduation', label: 'Tốt nghiệp', color: '#2196F3' },   // Màu xanh dương
+];
+
+export const genderLabels: Record<string, string> = {
+  M: "Nam",
+  F: "Nữ",
+  O: "Khác",
+};

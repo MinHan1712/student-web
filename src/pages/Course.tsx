@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import getApi from "../apis/get.api";
 import '../assets/css/style.css';
 import CourseSearch from "../components/filter/CourseSearch";
-import { selectPageSize } from "../constants/general.constant";
+import { selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { ICourseDTO, ICourseFilter } from "../interfaces/course";
 
@@ -146,12 +146,9 @@ const Course: React.FC = () => {
       key: "status",
       width: "8%",
       align: "center",
-      render: (text) => {
-        return (
-          <Tag>
-            {text === "true" ? "Hoạt động" : "Xóa"}
-          </Tag>
-        );
+      render: (status) => {
+        const statusInfo = StatusType.find((x) => x.value == status);
+        return <Tag color={statusInfo?.color}>{statusInfo?.label || status}</Tag>;
       },
     },
     {
@@ -218,7 +215,7 @@ const Course: React.FC = () => {
               onChange={(size: number) => {
                 setCourseReq({
                   ...courseReq,
-                  page: 1,
+                  page: 0,
                   size: size
                 });
                 setPageSize(size);

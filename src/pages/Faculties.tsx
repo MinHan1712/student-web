@@ -140,7 +140,7 @@ const FacultiesList: React.FC = () => {
               onChange={(size: number) => {
                 setFacultyReq({
                   ...facultyReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSize(size);

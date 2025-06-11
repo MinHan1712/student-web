@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Empty, Flex, Select, Pagination, Row, Col, Tag } from "antd";
+import { Table, Empty, Flex, Select, Pagination, Row, Col, Tag, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import getApi from "../apis/get.api";
@@ -10,6 +10,7 @@ import { renderText } from "../components/common";
 import getDetailsApi from "../apis/get.details.api";
 import { format } from "path";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
 
 const ClassesDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -109,12 +110,6 @@ const ClassesDetails: React.FC = () => {
       key: "phoneNumber",
     },
     {
-      title: "Ghi chú",
-      dataIndex: "remarks",
-      key: "notes",
-      render: (text: string) => text || "-",
-    },
-    {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
@@ -130,6 +125,53 @@ const ClassesDetails: React.FC = () => {
       render: (text: string) => text || "-",
     }];
 
+  const courseFields = [
+    { label: "Mã môn học", value: classes?.course?.courseCode || '' },
+    { label: "Tên môn học", value: classes?.course?.courseTitle || '' },
+    { label: "Số tín", value: classes?.course?.credits || '' },
+    { label: "Loại môn học", value: classes?.course?.courseType || '' }
+
+  ];
+
+  const courseFields1 = [
+    { label: "Lý thuyết", value: classes?.course?.lecture || '' },
+    { label: "Thảo luận", value: classes?.course?.tutorialDiscussion || '' },
+    { label: "Thực hành", value: classes?.course?.practical || '' },
+    { label: "Phòng thí nghiệm", value: classes?.course?.laboratory || '' },
+    { label: "Tự học", value: classes?.course?.selfStudy || '' },
+    { label: "Số buổi học", value: classes?.course?.numberOfSessions || '' }
+  ];
+
+  const teacherFields = [
+    { label: "Mã giảng viên", value: classes?.teachers?.teachersCode || '' },
+    { label: "Tên giảng viên", value: classes?.teachers?.name || '' },
+    { label: "Email", value: classes?.teachers?.email || '' },
+    { label: "Số điện thoại", value: classes?.teachers?.phoneNumber || '' }
+  ];
+
+  const teacherFields1 = [
+    {
+      label: "Ngày bắt đầu",
+      value: classes?.teachers?.startDate
+        ? dayjs(classes?.teachers?.startDate).format("DD/MM/YYYY")
+        : ''
+    },
+    {
+      label: "Ngày kết thúc",
+      value: classes?.teachers?.endDate
+        ? dayjs(classes?.teachers?.endDate).format("DD/MM/YYYY")
+        : ''
+    },
+    { label: "Chức vụ", value: classes?.teachers?.position || '' },
+    {
+      label: "Trình độ",
+      value:
+        QualificationTeaches.find(
+          (x) => x.value == (classes?.teachers?.qualification || '')
+        )?.label || ''
+    }
+  ];
+
   return (
     <>
       <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
@@ -138,18 +180,9 @@ const ClassesDetails: React.FC = () => {
         </Flex>
         <Row style={{ margin: "5px", width: "100%", background: "white", padding: "10px", borderRadius: "5px" }}
           className="d-flex ant-row-flex-space-around">
-          <Col span={12} style={{ padding: "5px" }} >
+          <Col span={6} style={{ padding: "5px" }} >
             <h3 style={{ width: '100%', paddingBottom: '10px' }}>Môn Học</h3>
-            {renderText("Mã môn học", classes?.course?.courseCode || '')}
-            {renderText("Tên môn học", classes?.course?.courseTitle || '')}
-            {renderText("Số tín", classes?.course?.credits || '')}
-            {renderText("Lý thuyết", classes?.course?.lecture || '')}
-            {renderText("Thảo luận", classes?.course?.tutorialDiscussion || '')}
-            {renderText("Thực hành", classes?.course?.practical || '')}
-            {renderText("Phòng thí nghiệm", classes?.course?.laboratory || '')}
-            {renderText("Tự học", classes?.course?.selfStudy || '')}
-            {renderText("Số buổi học", classes?.course?.numberOfSessions || '')}
-            {renderText("Loại môn học", classes?.course?.courseType || '')}
+            {courseFields.map(({ label, value }) => renderText(label, value || ''))}
             <Row className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
               <Col xs={14} sm={14} md={12} lg={10} xl={8}>
                 <h5>Trạng thái: </h5>
@@ -163,30 +196,14 @@ const ClassesDetails: React.FC = () => {
             {renderText("Học kỳ", classes?.course?.semester || '')}
           </Col>
 
-          <Col span={12} style={{ padding: "5px" }}>
+          <Col span={6} style={{ padding: "5px" }} >
+            <h3 style={{ width: '100%', paddingBottom: '10px' }}></h3>
+            {courseFields1.map(({ label, value }) => renderText(label, value || ''))}
+          </Col>
+
+          <Col span={6} style={{ padding: "5px" }}>
             <h3 style={{ width: '100%', paddingBottom: '10px' }}>Giảng Viên</h3>
-            {renderText("Mã giảng viên", classes?.teachers?.teachersCode || '')}
-            {renderText("Tên giảng viên", classes?.teachers?.name || '')}
-            {renderText("Email", classes?.teachers?.email || '')}
-            {renderText("Số điện thoại", classes?.teachers?.phoneNumber || '')}
-            {renderText(
-              "Ngày bắt đầu",
-              classes?.teachers?.startDate ? dayjs(classes?.teachers?.startDate).format("DD/MM/YYYY") : ""
-            )}
-            {renderText(
-              "Ngày kết thúc",
-              classes?.teachers?.endDate ? dayjs(classes?.teachers?.endDate).format("DD/MM/YYYY") : ""
-            )}
-            {renderText("Chức vụ", classes?.teachers?.position || '')}
-            {renderText("Trình độ", QualificationTeaches.find((x) => x.value == (classes?.teachers?.qualification || ''))?.label || '')}
-            <Row className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
-              <Col xs={14} sm={14} md={12} lg={10} xl={8}>
-                <h5>Khoa: </h5>
-              </Col>
-              <Col xs={14} sm={14} md={12} lg={14} xl={16}>
-                <a onClick={() => navigate(`/faculties/details?id=${classes?.teachers?.faculties?.id}`)}>{classes?.teachers?.faculties?.facultyName || ''}</a>
-              </Col>
-            </Row>
+            {teacherFields.map(({ label, value }) => renderText(label, value || ''))}
             <Row className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
               <Col xs={14} sm={14} md={12} lg={10} xl={8}>
                 <h5>Trạng thái: </h5>
@@ -198,10 +215,33 @@ const ClassesDetails: React.FC = () => {
               </Col>
             </Row>
           </Col>
+
+          <Col span={6} style={{ padding: "5px" }}>
+            <h3 style={{ width: '100%', paddingBottom: '10px' }}></h3>
+            {teacherFields1.map(({ label, value }) => renderText(label, value || ''))}
+            <Row className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+              <Col xs={14} sm={14} md={12} lg={10} xl={8}>
+                <h5>Khoa: </h5>
+              </Col>
+              <Col xs={14} sm={14} md={12} lg={14} xl={16}>
+                <a onClick={() => navigate(`/faculties/details?id=${classes?.teachers?.faculties?.id}`)}>{classes?.teachers?.faculties?.facultyName || ''}</a>
+              </Col>
+            </Row>
+          </Col>
         </Row>
       </Flex>
       <div className="table-wrapper" style={{ width: '100%', paddingTop: '10px' }}>
-        <h3 className="title" style={{ width: '100%', paddingBottom: '10px' }}>Danh sách sinh viên đăng ký</h3>
+        <Flex>
+          <h3 className="title" style={{ width: '100%', paddingBottom: '10px' }}>Danh sách sinh viên đăng ký</h3>
+          <Button
+            className="button btn-add d-flex flex-row justify-content-center align-content-center"
+            type="primary"
+            onClick={() => navigate(`/classes/update?id=${idClass}`)}>
+            <PlusCircleOutlined style={{ verticalAlign: "baseline" }} />
+            <span>Thêm sinh viên</span>
+          </Button>
+        </Flex>
+
         <Table
           rowKey={(record) => record.id}
           size="small"
@@ -233,7 +273,7 @@ const ClassesDetails: React.FC = () => {
               onChange={(size: number) => {
                 setClassRegisReq({
                   ...classRegisReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSize(size);

@@ -8,11 +8,6 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
     {
-        key: '1',
-        label: 'Tổng quan',
-        icon: <PieChartOutlined />
-    },
-    {
         key: '2',
         label: 'Khoa',
         // icon: <img alt="icon sider bar" style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
@@ -28,7 +23,7 @@ const items: MenuItem[] = [
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/xuat-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
             }
         ],
-    
+
     },
     {
         key: '5',
@@ -42,23 +37,28 @@ const items: MenuItem[] = [
         children: [
             {
                 key: '7',
-                label: <Link to="./" className='text-decoration-none'>Nhập điểm</Link>,
+                label: <Link to="./grade-score-manager" className='text-decoration-none'>Nhập điểm thi</Link>,
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/xuat-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
             },
             {
                 key: '8',
-                label: <Link to="./" className='text-decoration-none'>Thống kê</Link>,
+                label: <Link to="./course-score-manager" className='text-decoration-none'>Nhập điểm rèn luyện</Link>,
+                // icon: <img alt="icon sider bar" src={require('../../assets/img/xuat-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
+            },
+            {
+                key: '12',
+                label: <Link to="./statistic" className='text-decoration-none'>Thống kê</Link>,
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/xuat-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
             }
         ],
-    
+
     },
     {
         key: '9',
         label: 'Quản lý học phần',
         // icon: <img alt="icon sider bar" src={require('../../assets/img/kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
         children: [
-             {
+            {
                 key: '10',
                 label: <Link to="./course" className='text-decoration-none'>Học phần</Link>,
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
@@ -69,7 +69,7 @@ const items: MenuItem[] = [
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
             },
         ],
-    
+
     }
 ];
 
@@ -108,8 +108,8 @@ const SideLayout = (props: any) => {
                     <div className="user-info" style={{ display: 'flex', alignItems: 'center' }}>
                         <Avatar
                             size="large"
-                            shape= 'circle'
-                            src={require('../../assets/img/logo.png')}/>
+                            shape='circle'
+                            src={require('../../assets/img/logo.png')} />
                         {
                             props.collapsed ? "" : <div style={{ padding: '5px', fontWeight: '600', lineHeight: '17px' }}>Han</div>
                         }
