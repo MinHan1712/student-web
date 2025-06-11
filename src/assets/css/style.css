@@ -1725,7 +1725,7 @@ textarea[disabled],
 }
 
 .ant-modal-content .ant-modal-body {
-  padding: 4px;
+  padding: 10px !important;
   /* color: #fff; */
 }
 

@@ -2,6 +2,9 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import routes from './router';
 import AppLayout from './pages/AppLayout';
+import './assets/css/nav.css';
+import './assets/css/page.css';
+import './assets/css/style.css';
 
 function App() {
   return (

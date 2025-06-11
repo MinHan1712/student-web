@@ -1,4 +1,4 @@
-import { Empty, Flex, Pagination, Select, Table, Tag } from "antd";
+import { Button, Empty, Flex, Pagination, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
@@ -8,7 +8,8 @@ import ClassesSearch from "../components/filter/ClassesSearch";
 import { ClassTypes, DeliveryModes, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IClassDTO, IClassFilter } from "../interfaces/course";
-
+import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import ClassesCreate from "../components/create/ClassesCreate";
 
 const Classes: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Classes: React.FC = () => {
     page: 0,
     size: 20
   });
+  const [openFormCreate, setOpenFormCreate] = useState(false);
 
   const columns: ColumnsType<IClassDTO> = [
     {
@@ -31,6 +33,11 @@ const Classes: React.FC = () => {
       title: "Tên lớp",
       dataIndex: "className",
       key: "className",
+    },
+    {
+      title: "Môn học",
+      dataIndex: ["course", "courseTitle"],
+      key: "course.courseTitle"
     },
     {
       title: "Phòng học",
@@ -151,7 +158,14 @@ const Classes: React.FC = () => {
     <>
       <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
         <Flex gap="middle" justify="flex-start" align={'center'} style={{ width: '100%' }}>
-          <h3 className="title">Danh sách lớp học</h3>
+          <h3 className="title">Danh sách lớp học phần</h3>
+          <Button
+            className="button btn-add d-flex flex-row justify-content-center align-content-center"
+            type="primary"
+            onClick={() => setOpenFormCreate(true)}>
+            <PlusCircleOutlined style={{ verticalAlign: "baseline" }} />
+            <span>Thêm mới</span>
+          </Button>
         </Flex>
         <ClassesSearch req={classReq} triggerFormEvent={triggerFormEvent} />
       </Flex>
@@ -194,7 +208,7 @@ const Classes: React.FC = () => {
               onChange={(size: number) => {
                 setClassReq({
                   ...classReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSize(size);
@@ -216,6 +230,13 @@ const Classes: React.FC = () => {
           />
         </Flex>
       </div>
+      <ClassesCreate
+        open={openFormCreate}
+        onCancel={() => {
+          setOpenFormCreate(false);
+          getList();
+        }}
+      />
     </>
   );
 };

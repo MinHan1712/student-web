@@ -1,4 +1,4 @@
-import { Col, Empty, Flex, Pagination, Row, Select, Table, Tag } from "antd";
+import { Button, Col, Empty, Flex, Pagination, Row, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { renderText } from "../components/common";
 import { PositionTeaches, QualificationTeaches, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { ICourseFacultyDTO, ICourseFacultyFilter, IFacultyDTO, ITeacherDTO, ITeacherFilter } from "../interfaces/course";
+import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
 
 const FacultiesDetails: React.FC = () => {
   const location = useLocation();
@@ -340,7 +341,7 @@ const FacultiesDetails: React.FC = () => {
               onChange={(size: number) => {
                 setTeachersReq({
                   ...teachersReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSizeTeachers(size);
@@ -396,7 +397,7 @@ const FacultiesDetails: React.FC = () => {
               onChange={(size: number) => {
                 setCourseFaReq({
                   ...courseFaReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSizeTeachers(size);

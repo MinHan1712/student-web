@@ -7,9 +7,11 @@ import StudentsSearch from "../components/filter/StudentsSearch";
 import { genderMap, selectPageSize, StudentStatuses } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IStudentDTO, IStudentFilter } from "../interfaces/course";
+import { useNavigate } from "react-router-dom";
 
 
 const StudentsList: React.FC = () => {
+  const navigate = useNavigate();
   const [students, setStudents] = useState<IResponseN<IStudentDTO[]>>();
   const [loading, setLoading] = useState<boolean>(false);
   const [isReload, setIsReload] = useState(false);
@@ -146,6 +148,13 @@ const StudentsList: React.FC = () => {
           dataSource={students?.data}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+          onRow={(record) => {
+            return {
+              onClick: () => {
+                navigate(`/student/details?id=${record.id}`);
+              },
+            };
+          }}
         />
         <Flex gap="middle" justify="space-between" align="center" style={{ paddingTop: "10px" }}>
           <Flex gap="middle" align="center">
@@ -157,11 +166,12 @@ const StudentsList: React.FC = () => {
               onChange={(size: number) => {
                 setStudentReq({
                   ...studentReq,
-                  page: 1,
+                  page: 0,
                   size: size,
                 });
                 setPageSize(size);
               }}
+
             />
           </Flex>
 

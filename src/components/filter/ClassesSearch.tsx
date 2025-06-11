@@ -126,7 +126,7 @@ const ClassesSearch = (props: mapFormSearchToProps) => {
                 }
               >
                 <Select
-                  defaultValue=""
+                  // defaultValue=null
                   // style={{ width: 120 }}
                   options={StatusType}
                   value={props.req["status.equals"]}

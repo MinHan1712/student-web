@@ -1,7 +1,7 @@
 import { Col, Row } from "antd";
 import { formItemLayout } from "../constants/general.constant";
 
-export const renderText = (label: string, text: string, formItemLayou: any = formItemLayout, textAlign: any = "end") => {
+export const renderText = (label: string, text: any, formItemLayou: any = formItemLayout, textAlign: any = "end") => {
   return (
     <Row className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
       <Col xs={14} sm={14} md={12} lg={10} xl={8}>
