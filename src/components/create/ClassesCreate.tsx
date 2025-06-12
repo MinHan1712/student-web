@@ -2,7 +2,7 @@ import {
   CloseCircleOutlined,
   PlusCircleOutlined
 } from "@ant-design/icons";
-import { Button, DatePicker, Flex, Form, Input, InputNumber, Modal, Select } from "antd";
+import { Button, DatePicker, Flex, Form, Input, InputNumber, Modal, notification, Select } from "antd";
 import dayjs from 'dayjs';
 import { useEffect, useState } from "react";
 import getApi from "../../apis/get.api";
@@ -34,6 +34,7 @@ const ClassesCreate = (props: IProviderInformationProps) => {
   }
 
   const create = async (value: IClassDTO) => {
+    setLoading(true);
     try {
       const payload = {
         ...value,
@@ -43,13 +44,28 @@ const ClassesCreate = (props: IProviderInformationProps) => {
         course: { id: value.course }
 
       };
-      console.log(`Provider`, payload);
-      const response = await postApi.createClasses(payload);
-      console.log(response);
-      form.resetFields();
-      props.onCancel();
+      await postApi.createClasses(payload).then((response) => {
+        // switch (response) {
+        //   case 200:
+        notification['success']({
+          message: "Thông báo",
+          description: 'Cập nhập điểm thành công',
+        });
+        form.resetFields();
+        props.onCancel();
+      })
+        .catch(() => {
+          notification['error']({
+            message: "Lỗi",
+            description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+          });
+        })
+
     } catch (err) {
-      console.log(err);
+      notification['error']({
+        message: "Lỗi",
+        description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+      });
     } finally { setLoading(false); }
   }
 

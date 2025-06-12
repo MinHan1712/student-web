@@ -314,7 +314,7 @@ const ConductScoreManager: React.FC = () => {
                       onSelect={(selectedId: number) => {
                         getListClassName(selectedId);
                       }}
-                      notFoundContent={listConduct ? <Empty description="Không có dữ liệu" /> : null}
+                      notFoundContent={listFaculty ? <Empty description="Không có dữ liệu" /> : null}
                     >
                       {listFaculty?.map((faculty) => (
                         <Select.Option key={faculty.id} value={faculty.id} label={faculty.facultyCode}>

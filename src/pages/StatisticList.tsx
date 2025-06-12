@@ -1,13 +1,15 @@
-import { Button, Empty, Flex, Form, Input, Pagination, Select, Table, Tag } from "antd";
+import { Button, Empty, Flex, Form, Input, notification, Pagination, Select, Table, Tag } from "antd";
 import { useEffect, useState } from "react";
 import getApi from "../apis/get.api";
-import { IMasterDataDTO, IStatisticDTO, IStatisticFilter } from "../interfaces/course";
+import { IFacultyDTO, IMasterDataDTO, IStatisticDTO, IStatisticFilter } from "../interfaces/course";
 import { ColumnsType } from "antd/es/table";
 import { IResponseN } from "../interfaces/common";
 import dayjs from "dayjs";
 import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { formItemLayout, selectPageSize, StatusType, typeOptions } from "../constants/general.constant";
 import { useNavigate } from "react-router-dom";
+import ReportCreateModal from "../components/create/ReportCreate";
+import postApi from "../apis/post.api";
 const StatisticList: React.FC = () => {
   const [form] = Form.useForm<IStatisticFilter>();
   const [statistics, setStatistics] = useState<IResponseN<IStatisticDTO[]>>();
@@ -16,6 +18,8 @@ const StatisticList: React.FC = () => {
   const [filterReq, setFilterReq] = useState<IStatisticFilter>({ page: 0, size: 20, "status.equals": true });
   const [academicYearM, setAcademicYear] = useState<IMasterDataDTO[]>([]);
   const navigate = useNavigate();
+  const [listFaculty, setListFaculty] = useState<IFacultyDTO[]>([]);
+  const [openReportModal, setOpenReportModal] = useState(false);
   const columns: ColumnsType<IStatisticDTO> = [
     {
       title: "Mã thống kê",
@@ -65,6 +69,17 @@ const StatisticList: React.FC = () => {
     },
   ];
 
+  const getListFaculty = async () => {
+    try {
+      const fullQuery = toQueryString({ page: 0, size: 20 });
+      const response = await getApi.getFaculties(fullQuery);
+      setListFaculty(response.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
+  };
+
   const toQueryString = (params: Record<string, any>): string => {
     const cleanedParams = Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value !== undefined)
@@ -102,6 +117,7 @@ const StatisticList: React.FC = () => {
 
   useEffect(() => {
     getMasterData();
+    getListFaculty();
   }, []);
 
   useEffect(() => {
@@ -202,6 +218,16 @@ const StatisticList: React.FC = () => {
                     <SearchOutlined style={{ verticalAlign: "baseline" }} />
                     <span>Tìm kiếm</span>
                   </Button>
+                  <Button
+                    className="button btn-add"
+                    type="primary"
+                    onClick={() => {
+                      setOpenReportModal(true); // Mở modal
+                    }}
+                  >
+                    <SearchOutlined style={{ verticalAlign: "baseline" }} />
+                    <span>Tạo báo cáo</span>
+                  </Button>
                 </Flex>
 
               </div></Flex>
@@ -270,6 +296,22 @@ const StatisticList: React.FC = () => {
           />
         </Flex>
       </div>
+
+      <ReportCreateModal
+        open={openReportModal}
+        academicYearM={academicYearM}
+        listFaculty={listFaculty}
+        onCancel={() => setOpenReportModal(false)}
+        onCreate={() => {
+          try {
+            getList();
+          } catch (error) {
+            console.error("Error creating report:", error);
+          } finally {
+            setOpenReportModal(false);
+          }
+        }}
+      />
     </>
   );
 };
