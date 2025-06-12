@@ -13,7 +13,8 @@ const endpoint = {
   grades: "grades/multi",
   conduct: "conduct-scores/multi",
   updateClass: (id: number) => `classes/update/${id}`,
-  scorseConde: '/conduct/create'
+  scorseConde: 'conduct/create',
+  report: '/statistic/create'
 };
 
 const postApi = {
@@ -134,6 +135,17 @@ const postApi = {
     try {
       const response = await privateClient.post<Object>(
         endpoint.updateClass(id), params
+      );
+
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  createReport: async (params: any): Promise<Object> => {
+    try {
+      const response = await privateClient.post<Object>(
+        endpoint.report, params
       );
 
       return response.data;

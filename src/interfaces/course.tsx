@@ -315,3 +315,11 @@ export interface IClassNameDTO{
   className?: string[];
   course?: string;
 }
+
+export interface IReportFilter {
+  type: string;
+  facultyId: number;
+  academicYear: string;
+  minTotalCredits: number;
+  node: string;
+}

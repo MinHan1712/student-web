@@ -18,6 +18,11 @@ export const formItemLayout = {
   wrapperCol: { sm: { span: 24 }, md: { span: 24 }, lg: { span: 14 }, xl: { span: 16 } }
 };
 
+export const formItemLayout1 = {
+  labelCol: { sm: { span: 24 }, md: { span: 24 }, lg: { span: 24 }, xl: { span: 24 } },
+  wrapperCol: { sm: { span: 24 }, md: { span: 24 }, lg: { span: 24 }, xl: { span: 24 } }
+};
+
 export const buttonAction = {
   create: 1,
   delete: 2,
