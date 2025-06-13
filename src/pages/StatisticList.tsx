@@ -1,21 +1,21 @@
-import { Button, Empty, Flex, Form, Input, notification, Pagination, Select, Table, Tag } from "antd";
-import { useEffect, useState } from "react";
-import getApi from "../apis/get.api";
-import { IFacultyDTO, IMasterDataDTO, IStatisticDTO, IStatisticFilter } from "../interfaces/course";
+import { SearchOutlined } from "@ant-design/icons";
+import { Button, Empty, Flex, Form, notification, Pagination, Select, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { IResponseN } from "../interfaces/common";
 import dayjs from "dayjs";
-import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { formItemLayout, selectPageSize, StatusType, typeOptions } from "../constants/general.constant";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import getApi from "../apis/get.api";
 import ReportCreateModal from "../components/create/ReportCreate";
-import postApi from "../apis/post.api";
+import { formItemLayout, selectPageSize, StatusType, typeOptions } from "../constants/general.constant";
+import { IResponseN } from "../interfaces/common";
+import { IFacultyDTO, IMasterDataDTO, IStatisticDTO, IStatisticFilter } from "../interfaces/course";
+import { AxiosError } from "axios";
 const StatisticList: React.FC = () => {
   const [form] = Form.useForm<IStatisticFilter>();
   const [statistics, setStatistics] = useState<IResponseN<IStatisticDTO[]>>();
   const [loading, setLoading] = useState<boolean>(false);
   const [pageSize, setPageSize] = useState<number>(20);
-  const [filterReq, setFilterReq] = useState<IStatisticFilter>({ page: 0, size: 20, "status.equals": true });
+  const [filterReq, setFilterReq] = useState<IStatisticFilter>({ page: 0, size: 20, "status.equals": true, "sort": "lastModifiedDate,desc" });
   const [academicYearM, setAcademicYear] = useState<IMasterDataDTO[]>([]);
   const navigate = useNavigate();
   const [listFaculty, setListFaculty] = useState<IFacultyDTO[]>([]);
@@ -59,23 +59,32 @@ const StatisticList: React.FC = () => {
       title: "Ngày tạo",
       dataIndex: "createdDate",
       key: "createdDate",
-      render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY HH:mm") : "",
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "lastModifiedDate",
       key: "lastModifiedDate",
-      render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY HH:mm") : "",
     },
   ];
 
   const getListFaculty = async () => {
     try {
-      const fullQuery = toQueryString({ page: 0, size: 20 });
+      const fullQuery = toQueryString({ page: 0, size: 20, "sort": "lastModifiedDate,desc" });
       const response = await getApi.getFaculties(fullQuery);
-      setListFaculty(response.data);
+    
+      setListFaculty(response.data || []);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+       if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
     } finally {
     }
   };
@@ -91,11 +100,19 @@ const StatisticList: React.FC = () => {
     setLoading(true);
     try {
       const fullQuery = toQueryString(filterReq);
-      // Giả sử getApi có method getStatistics trả về IResponseN<IStatisticDTO>
       const response = await getApi.getStatic(fullQuery);
+      
       setStatistics(response);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+     const error = err as AxiosError;
+       if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
     } finally {
       setLoading(false);
     }
@@ -107,9 +124,18 @@ const StatisticList: React.FC = () => {
       const key = { "key.equals": "ACADEMIC", page: 0, size: 100000 }
       const fullQuery = toQueryString(key);
       const response = await getApi.getMasterData(fullQuery);
-      setAcademicYear(response.data);
+     
+      setAcademicYear(response.data || []);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+       if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
     } finally {
       setLoading(false);
     }
@@ -258,7 +284,7 @@ const StatisticList: React.FC = () => {
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
           onRow={(record) => {
             return {
-              onClick: () => {
+              onDoubleClick: () => {
                 navigate(`/statistic/details?id=${record.id}`);
               },
             };

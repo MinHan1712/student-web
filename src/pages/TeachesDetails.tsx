@@ -1,4 +1,4 @@
-import { Col, Empty, Flex, Pagination, Row, Select, Table, Tag } from "antd";
+import { Col, Empty, Flex, notification, Pagination, Row, Select, Table, Tag } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -7,7 +7,8 @@ import getDetailsApi from "../apis/get.details.api";
 import { renderText } from "../components/common";
 import { CourseStatuses, QualificationTeaches, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
-import { IClassDTO, IClassFilter, IClassRegistrationsDTO, IClassRegistrationsFilter, ITeacherDTO } from "../interfaces/course";
+import { IClassDTO, IClassFilter, ITeacherDTO } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 const TeachesDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +25,8 @@ const TeachesDetails: React.FC = () => {
   const [classRegisReq, setClassRegisReq] = useState<IClassFilter>({
     page: 0,
     size: 20,
-    "teachersId.equals": idTeachers
+    "teachersId.equals": idTeachers,
+    "sort": "lastModifiedDate,desc"
     // "teachers.equals": idTeachers
   });
 
@@ -39,9 +41,18 @@ const TeachesDetails: React.FC = () => {
     setLoading(true);
     try {
       const response = await getDetailsApi.getTeaches(idTeachers);
+
       setTeaches(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -52,9 +63,18 @@ const TeachesDetails: React.FC = () => {
     try {
       const fullQuery = toQueryString(classRegisReq);
       const response = await getApi.getClasses(fullQuery);
+
       setClassRegis(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -72,44 +92,55 @@ const TeachesDetails: React.FC = () => {
   const columnsClasses = [
     {
       title: "Mã lớp",
-      dataIndex: ["classes", "classCode"],
+      dataIndex: ["classCode"],
       key: "classCode",
     },
     {
       title: "Tên lớp",
-      dataIndex: ["classes", "className"],
+      dataIndex: ["className"],
       key: "className",
     },
     {
       title: "Phòng học",
-      dataIndex: ["classes", "classroom"],
+      dataIndex: ["classroom"],
       key: "classroom",
     },
     {
       title: "Số tín chỉ",
-      dataIndex: ["classes", "credits"],
+      dataIndex: ["credits"],
       key: "credits",
     },
     {
       title: "Sĩ số",
-      dataIndex: ["classes", "totalNumberOfStudents"],
+      dataIndex: ["totalNumberOfStudents"],
       key: "totalNumberOfStudents",
     },
     {
       title: "Ngày bắt đầu",
-      dataIndex: ["classes", "startDate"],
+      dataIndex: ["startDate"],
       key: "startDate",
-      render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text: string) => text ? dayjs(text).format("DD/MM/YYYY") : "",
     },
     {
       title: "Ngày kết thúc",
-      dataIndex: ["classes", "endDate"],
+      dataIndex: ["endDate"],
       key: "endDate",
-      render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text: string) => text ? dayjs(text).format("DD/MM/YYYY") : "",
+    },
+    {
+      title: "Năm học",
+      dataIndex: ["academicYear"],
+      key: "academicYear",
+    },
+    {
+      title: "Ngày đăng ký",
+      dataIndex: "createdDate",
+      key: "createdDate",
+      render: (text: string) => text ? dayjs(text).format("DD/MM/YYYY") : "",
     },
     {
       title: "Trạng thái",
-      dataIndex: ["classes", "status"],
+      dataIndex: ["status"],
       key: "status",
       render: (status: boolean) => {
         const statusInfo = StatusType.find((x) => x.value == status);
@@ -117,35 +148,9 @@ const TeachesDetails: React.FC = () => {
       },
     },
     {
-      title: "Năm học",
-      dataIndex: ["classes", "academicYear"],
-      key: "academicYear",
-    },
-    {
-      title: "Ngày đăng ký",
-      dataIndex: "registerDate",
-      key: "registerDate",
-      render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
-    },
-    {
       title: "Ghi chú",
       dataIndex: "remarks",
       key: "notes",
-      render: (text: string) => text || "-",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        const stat = CourseStatuses.find((x) => x.value === status);
-        return <Tag color={stat?.color}>{stat?.label || status}</Tag>;
-      },
-    },
-    {
-      title: "Ghi chú",
-      dataIndex: "remarks",
-      key: "remarks",
       render: (text: string) => text || "-",
     }];
 

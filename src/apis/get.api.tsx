@@ -1,5 +1,6 @@
+
 import { IResponseN } from "../interfaces/common";
-import { IClassCourseDTO, IClassDTO, IClassRegistrationsDTO, IConductScoreDTO, ICourseDTO, ICourseFacultyDTO, IFacultyDTO, IGradeDTO, IMasterDataDTO, IStatisticDetailDTO, IStatisticDTO, IStudentDTO, ITeacherDTO } from "../interfaces/course";
+import { IClassCourseDTO, IClassDTO, IClassFacu, IClassRegistrationsDTO, IConductScoreDTO, ICourseDTO, ICourseFacultyDTO, IFacultyDTO, IGradeDTO, IMasterDataDTO, IStatisticDetailDTO, IStatisticDTO, IStudentDTO, ITeacherDTO } from "../interfaces/course";
 import privateClient from "./clients/private.client";
 
 const endpoint = {
@@ -14,7 +15,9 @@ const endpoint = {
   conductScores: "conduct/get",
   static: "statistics",
   statisticsDetails: "statistics-details",
-  masterData: "master-data"
+  masterData: "master-data",
+  classScourse: "class-courses",
+  loginApi: "login"
 };
 
 const getApi = {
@@ -233,7 +236,35 @@ const getApi = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+  getClassScourse: async (params: any): Promise<IResponseN<IClassFacu[]>> => {
+    try {
+      const response = await privateClient.get<IClassFacu[]>(
+        endpoint.classScourse + params,
+      );
+
+      const total = Number(response.headers['x-total-count']);
+
+      const respon: IResponseN<IClassFacu[]> = {
+        total: total,
+        data: response.data
+      };
+
+      return respon;
+    } catch (error) {
+      throw error;
+    }
+  },
+  login: async (params: any): Promise<Object> => {
+    try {
+      const response = await privateClient.post<Object>(
+        endpoint.loginApi, params,
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 

@@ -10,7 +10,8 @@ import '../assets/css/style.css';
 import { renderText } from "../components/common";
 import { ClassTypes, CourseStatuses, DeliveryModes, formItemLayout, genderMap, QualificationTeaches } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
-import { IClassDTO, IClassRegistrationsDTO, IClassRegistrationsFilter, IClassUpdateDTO, IStudentDTO, IStudentFilter } from "../interfaces/course";
+import { IClassDTO, IClassRegistrationsDTO, IClassRegistrationsFilter, IClassUpdateDTO, IMasterDataDTO, IStudentDTO, IStudentFilter } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 const ClassManager: React.FC = () => {
   const { confirm } = Modal;
@@ -24,6 +25,7 @@ const ClassManager: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingStudents, setIsEditingStudents] = useState(false);
   const [originalRegistrations, setOriginalRegistrations] = useState<IClassRegistrationsDTO[]>([]);
+  const [academicYearM, setAcademicYear] = useState<IMasterDataDTO[]>([]);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -32,15 +34,17 @@ const ClassManager: React.FC = () => {
   const navigate = useNavigate();
   const [studentReq, setStudentReq] = useState<IStudentFilter>({
     page: 0,
-    size: 20,
-    "status.equals": "Studying"
+    size: 2100,
+    "status.equals": "Studying",
+    "sort": "lastModifiedDate,desc"
   });
 
   const [classRegisterReq, setClassRegisterReq] = useState<IClassRegistrationsFilter>({
     page: 0,
     size: 20,
     "status.notIn": ['Cancelled', 'Failed'],
-    "classesId.equals": idClass
+    "classesId.equals": idClass,
+    "sort": "lastModifiedDate,desc"
   });
 
 
@@ -50,15 +54,47 @@ const ClassManager: React.FC = () => {
     );
     return '?' + new URLSearchParams(cleanedParams as any).toString();
   };
+  const getMasterData = async () => {
+    setLoading(true);
+    try {
+      const key = { "key.equals": "ACADEMIC", page: 0, size: 100000 }
+      const fullQuery = toQueryString(key);
+      const response = await getApi.getMasterData(fullQuery);
 
+      setAcademicYear(response.data || []);
+    } catch (err) {
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   const getClasses = async () => {
     setLoading(true);
     try {
       const response = await getDetailsApi.getClasses(idClass);
+
       setClasses(response);
       setClassUpdate(convertToClassUpdateDTO(response));
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -69,9 +105,19 @@ const ClassManager: React.FC = () => {
     try {
       const fullQuery = toQueryString(studentReq);
       const response = await getApi.getStudents(fullQuery);
+
       setStudents(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -82,9 +128,19 @@ const ClassManager: React.FC = () => {
     try {
       const fullQuery = toQueryString(classRegisterReq);
       const response = await getApi.getClassRegistrations(fullQuery);
-      setClassRegistrations(response.data);
+
+      setClassRegistrations(response.data || []);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -122,7 +178,17 @@ const ClassManager: React.FC = () => {
         setIsEditing(false);
         setIsEditingStudents(false);
       })
-        .catch(() => {
+        .catch((err) => {
+          const error = err as AxiosError;
+
+          if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
           notification['error']({
             message: "Lỗi",
             description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
@@ -130,6 +196,7 @@ const ClassManager: React.FC = () => {
         })
 
     } catch (err) {
+
       notification['error']({
         message: "Lỗi",
         description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
@@ -149,10 +216,20 @@ const ClassManager: React.FC = () => {
       key: "fullName",
     },
     {
+      title: "Lớp",
+      dataIndex: ["student", "courseYear"],
+      key: "student.courseYear",
+    },
+    {
+      title: "Khóa",
+      dataIndex: ["student", "courseYear"],
+      key: "student.courseYear",
+    },
+    {
       title: "Ngày sinh",
       dataIndex: ["student", "dateOfBirth"],
       key: "dateOfBirth",
-      render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text: string) => text ? dayjs(text).format("DD/MM/YYYY") : '',
     },
     {
       title: "Giới tính",
@@ -168,7 +245,7 @@ const ClassManager: React.FC = () => {
       title: "Ngày đăng ký",
       dataIndex: "registerDate",
       key: "registerDate",
-      render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text: string) => text ? dayjs(text).format("DD/MM/YYYY") : '',
     },
     {
       title: "Số điện thoại",
@@ -233,18 +310,6 @@ const ClassManager: React.FC = () => {
     }
 
   ];
-
-  const onScrollSelectStudent = (e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-
-    if (scrollTop + clientHeight >= scrollHeight - 20) {
-      setStudentReq({
-        ...studentReq,
-        page: studentReq.page || 1 + 1,
-      })
-    }
-  };
-
   const confirmCreateInvExport = (value: IClassUpdateDTO) => {
     confirm({
       title: 'Bạn có đồng ý cập nhập không?',
@@ -395,7 +460,21 @@ const ClassManager: React.FC = () => {
           name="academicYear"
           label="Năm học"
         >
-          <Input />
+          <Select
+            placeholder="Chọn năm học"
+            className="d-flex w-100 form-select-search "
+            style={{ minHeight: '30px' }}
+            size="middle"
+            optionLabelProp="label"
+            disabled={!academicYearM}
+            notFoundContent={academicYearM && academicYearM.length == 0 ? <Empty description="Không có dữ liệu" /> : null}
+          >
+            {academicYearM.map((item) => (
+              <Select.Option key={item.id} value={item.code} label={item.name}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
       ),
     },
@@ -580,48 +659,50 @@ const ClassManager: React.FC = () => {
             </Form>
           </div>
           <div style={{ width: '10%' }}>
-            <Flex style={{ width: '100%', justifyContent: 'flex-end', marginBottom: 10 }}>
-              {!isEditing ? (
-                <Button
-                  className="button btn-add"
-                  type="primary"
-                  onClick={handleEditToggle}
-                >
-                  <PlusCircleOutlined />
-                  <span> Sửa</span>
-                </Button>
-              ) : (
-                <>
+            {classes.status ? <>
+              <Flex style={{ width: '100%', justifyContent: 'flex-end', marginBottom: 10 }}>
+                {!isEditing ? (
                   <Button
-                    style={{ marginRight: '8px' }}
-                    onClick={() => {
-                      handleEditToggle();
-                      const studentIds = classesUpdate?.studentIds ?? [];
-                      const studentRemove = classesUpdate?.studentIdRemove ?? [];
-
-                      convertToClassUpdateDTO(classes);
-
-                      setClassUpdate({
-                        ...classesUpdate,
-                        studentIds: studentIds,
-                        studentIdRemove: studentRemove,
-                        id: classes.id
-                      });
-                    }
-                    }
-                  >
-                    Hủy
-                  </Button>
-                  <Button
+                    className="button btn-add"
                     type="primary"
-                    style={{ marginLeft: '8px' }}
-                    onClick={() => classForm.submit()}
+                    onClick={handleEditToggle}
                   >
-                    Cập nhật
+                    <PlusCircleOutlined />
+                    <span> Sửa</span>
                   </Button>
-                </>
-              )}
-            </Flex>
+                ) : (
+                  <>
+                    <Button
+                      style={{ marginRight: '8px' }}
+                      color="danger" variant="outlined"
+                      onClick={() => {
+                        handleEditToggle();
+                        const studentIds = classesUpdate?.studentIds ?? [];
+                        const studentRemove = classesUpdate?.studentIdRemove ?? [];
+
+                        convertToClassUpdateDTO(classes);
+
+                        setClassUpdate({
+                          ...classesUpdate,
+                          studentIds: studentIds,
+                          studentIdRemove: studentRemove,
+                          id: classes.id
+                        });
+                      }
+                      }
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      type="primary"
+                      style={{ marginLeft: '8px' }}
+                      onClick={() => classForm.submit()}
+                    >
+                      Cập nhật
+                    </Button>
+                  </>
+                )}
+              </Flex></> : <></>}
 
           </div>
         </Flex >
@@ -686,6 +767,7 @@ const ClassManager: React.FC = () => {
       </>,
     }
   ];
+
   useEffect(() => {
     if (isEditing && classesUpdate) {
       classForm.setFieldsValue({
@@ -695,6 +777,10 @@ const ClassManager: React.FC = () => {
       });
     }
   }, [isEditing, classesUpdate]);
+
+  useEffect(() => {
+    getMasterData();
+  }, [])
 
   const handleStartEditing = () => {
     setOriginalRegistrations([...listClassRegister]);
@@ -723,7 +809,6 @@ const ClassManager: React.FC = () => {
                     style={{ width: '100%' }}
                     placeholder="Chọn sinh viên"
                     optionLabelProp="label"
-                    onPopupScroll={onScrollSelectStudent}
                     onSearch={(value) => {
                       console.log(value);
                       setStudentReq({
@@ -760,8 +845,8 @@ const ClassManager: React.FC = () => {
                     }}
                   >
                     {students?.data?.map((student) => (
-                      <Select.Option key={student.id} value={student.id} label={student.studentCode}>
-                        {student.studentCode + " - " + student.fullName}
+                      <Select.Option key={student.id} value={student.id} label={student?.studentCode + " - " + student?.fullName}>
+                        {student?.studentCode + " - " + student?.fullName}
                       </Select.Option>
                     ))}
                   </Select>
@@ -778,22 +863,22 @@ const ClassManager: React.FC = () => {
           items={getItems(panelStyle)}
         />
 
-
-        <Flex style={{ width: '100%', justifyContent: 'flex-end' }}>
-          {!isEditingStudents ? (
-            <Button type="primary" onClick={handleStartEditing}>
-              <PlusCircleOutlined />
-              <span>Thêm sinh viên</span>
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleCancelEditing}>Hủy</Button>
-              <Button type="primary" onClick={() => confirmCreateInvExport(classesUpdate || { id: classes.id })}>
-                Cập nhật
+        {classes.status ? <>
+          <Flex style={{ width: '100%', justifyContent: 'flex-end' }}>
+            {!isEditingStudents ? (
+              <Button type="primary" onClick={handleStartEditing}>
+                <PlusCircleOutlined />
+                <span>Thêm sinh viên</span>
               </Button>
-            </>
-          )}
-        </Flex>
+            ) : (
+              <>
+                <Button onClick={handleCancelEditing}>Hủy</Button>
+                <Button type="primary" onClick={() => confirmCreateInvExport(classesUpdate || { id: classes.id })}>
+                  Cập nhật
+                </Button>
+              </>
+            )}
+          </Flex></> : <></>}
 
         <div className="table-wrapper" style={{ width: '100%' }}>
           <div className="table-container">

@@ -5,6 +5,7 @@ import AppLayout from './pages/AppLayout';
 import './assets/css/nav.css';
 import './assets/css/page.css';
 import './assets/css/style.css';
+import LoginPage from './pages/logic';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             )
           )}
         </Route>
+        <Route path='/login' element={<LoginPage />} />
       </Routes>
 
     </BrowserRouter>

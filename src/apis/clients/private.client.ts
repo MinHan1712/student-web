@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosRequestHeaders } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosRequestHeaders, InternalAxiosRequestConfig } from 'axios';
 import queryString from 'query-string';
 import { KEY_LOCAL_STORAGE } from '../../constants/general.constant';
 
@@ -14,10 +14,11 @@ privateClient.interceptors.request.use(async (config: AxiosRequestConfig) => {
         ...config,
         headers: {
             'Content-Type': 'application/json',
-            // 'Authorization': `Bearer ${localStorage.getItem(KEY_LOCAL_STORAGE.AUTHEN)}`,
+            'Authorization': `${localStorage.getItem('token')}`,
         } as AxiosRequestHeaders,
     };
 });
+
 
 privateClient.interceptors.response.use(
     (response: AxiosResponse) => {

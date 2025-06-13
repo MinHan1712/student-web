@@ -6,6 +6,8 @@ import { useState } from "react";
 import postApi from "../../apis/post.api";
 import { formItemLayout1, typeOptions } from "../../constants/general.constant";
 import { IFacultyDTO, IMasterDataDTO, IReportFilter } from "../../interfaces/course";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 interface IReportCreateModalProps {
@@ -17,6 +19,7 @@ interface IReportCreateModalProps {
 }
 
 const ReportCreateModal = ({ open, onCreate, onCancel, academicYearM, listFaculty }: IReportCreateModalProps) => {
+  const navigate = useNavigate();
   const [form] = Form.useForm<IReportFilter>();
   const [loading, setLoading] = useState<boolean>(false);
   const selectedType = useWatch('type', form);
@@ -38,7 +41,22 @@ const ReportCreateModal = ({ open, onCreate, onCancel, academicYearM, listFacult
         onCancel();
         onCreate();
       })
-        .catch(() => {
+        .catch((err) => {
+          const error = err as AxiosError;
+
+          if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
+
+          notification['error']({
+            message: "Lỗi",
+            description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+          });
           notification['error']({
             message: "Lỗi",
             description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
