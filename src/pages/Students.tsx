@@ -1,13 +1,14 @@
-import { Empty, Flex, Pagination, Select, Table, Tag } from "antd";
+import { Empty, Flex, notification, Pagination, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api";
 import StudentsSearch from "../components/filter/StudentsSearch";
 import { genderMap, selectPageSize, StudentStatuses } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IStudentDTO, IStudentFilter } from "../interfaces/course";
-import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 
 const StudentsList: React.FC = () => {
@@ -18,7 +19,8 @@ const StudentsList: React.FC = () => {
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
   const [studentReq, setStudentReq] = useState<IStudentFilter>({
     page: 0,
-    size: 20
+    size: 20,
+    "sort": "lastModifiedDate,desc"
   });
 
   const columns: ColumnsType<IStudentDTO> = [
@@ -26,6 +28,16 @@ const StudentsList: React.FC = () => {
       title: "Mã sinh viên",
       dataIndex: "studentCode",
       key: "studentCode",
+    },
+    {
+      title: "Lớp",
+      dataIndex: "clasName",
+      key: "clasName",
+    },
+    {
+      title: "Khóa",
+      dataIndex: "courseYear",
+      key: "courseYear",
     },
     {
       title: "Họ và tên",
@@ -36,7 +48,7 @@ const StudentsList: React.FC = () => {
       title: "Ngày sinh",
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
-      render: (text) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY") : "",
     },
     {
       title: "Giới tính",
@@ -82,7 +94,7 @@ const StudentsList: React.FC = () => {
       title: "Ngày nhập học",
       dataIndex: "dateEnrollment",
       key: "dateEnrollment",
-      render: (text) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY") : "",
     },
   ];
 
@@ -98,9 +110,18 @@ const StudentsList: React.FC = () => {
     try {
       const fullQuery = toQueryString(studentReq);
       const response = await getApi.getStudents(fullQuery);
+    
       setStudents(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -150,7 +171,7 @@ const StudentsList: React.FC = () => {
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
           onRow={(record) => {
             return {
-              onClick: () => {
+              onDoubleClick: () => {
                 navigate(`/student/details?id=${record.id}`);
               },
             };

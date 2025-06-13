@@ -7,9 +7,10 @@ import getApi from "../apis/get.api";
 import postApi from "../apis/post.api";
 import '../assets/css/style.css';
 import { renderText } from "../components/common";
-import { QualificationTeaches } from "../constants/general.constant";
+import { courseTypeOptions, QualificationTeaches } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IClassDTO, IClassFilter, IGradeDTO, IGradeFilter } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 
 const GradeScoreManager: React.FC = () => {
@@ -21,18 +22,19 @@ const GradeScoreManager: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(false);
   const navigate = useNavigate();
-
   const [classReq, setClassReq] = useState<IClassFilter>({
     page: 0,
-    size: 20,
-    "status.equals": true
+    size: 10020,
+    "status.equals": true,
+    "sort": "lastModifiedDate,desc"
   });
 
   const [gradeReq, setGradeReq] = useState<IGradeFilter>({
     page: 0,
     size: 20,
     "status.equals": true,
-    "classesId.equals": 0
+    "classesId.equals": 0,
+    "sort": "lastModifiedDate,desc"
   });
 
 
@@ -48,9 +50,18 @@ const GradeScoreManager: React.FC = () => {
     try {
       const fullQuery = toQueryString(classReq);
       const response = await getApi.getClasses(fullQuery);
+      
       setClasses(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -61,9 +72,18 @@ const GradeScoreManager: React.FC = () => {
     try {
       const fullQuery = toQueryString(gradeReq);
       const response = await getApi.getGrades(fullQuery);
-      setListGrade(response.data);
+      
+      setListGrade(response.data || []);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -90,7 +110,16 @@ const GradeScoreManager: React.FC = () => {
         });
         setIsEditing(false);
       })
-        .catch(() => {
+        .catch((err) => {
+          const error = err as AxiosError;
+          if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
           notification['error']({
             message: "Lỗi",
             description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
@@ -117,6 +146,22 @@ const GradeScoreManager: React.FC = () => {
       dataIndex: ["student", "studentCode"],
       key: "student.studentCode",
       render: (_, record) => <span>{record.student.studentCode}</span>,
+    },
+    {
+      title: 'Tên sinh viên',
+      dataIndex: ["student", "fullName"],
+      key: "student.fullName",
+      render: (_, record) => <span>{record.student.fullName}</span>,
+    },
+    {
+      title: "Lớp",
+      dataIndex: ["student", "courseYear"],
+      key: "student.courseYear",
+    },
+    {
+      title: "Khóa",
+      dataIndex: ["student", "courseYear"],
+      key: "student.courseYear",
     },
     {
       title: 'Tín chỉ',
@@ -195,7 +240,7 @@ const GradeScoreManager: React.FC = () => {
       dataIndex: 'letterGrade',
       key: 'letterGrade',
       render: (_, record) => (
-        <span>{letterGradeLabelMap[record.letterGrade] || 'Không xác định'}</span>
+        <span>{letterGradeLabelMap[record.letterGrade] || ''}</span>
       ),
     },
     {
@@ -203,7 +248,7 @@ const GradeScoreManager: React.FC = () => {
       dataIndex: 'evaluation',
       key: 'evaluation',
       render: (_, record) => (
-        <span>{evaluationLabelMap[record.evaluation] || 'Không xác định'}</span>
+        <span>{evaluationLabelMap[record.evaluation] || ''}</span>
       ),
     },
     {
@@ -258,15 +303,37 @@ const GradeScoreManager: React.FC = () => {
     let score4: number;
     let letterGrade: string;
 
-    if (score10 >= 8.5) { score4 = 4.0; letterGrade = 'APlus'; }
-    else if (score10 >= 8.0) { score4 = 3.7; letterGrade = 'A'; }
-    else if (score10 >= 7.0) { score4 = 3.5; letterGrade = 'BPlus'; }
-    else if (score10 >= 6.5) { score4 = 3.0; letterGrade = 'B'; }
-    else if (score10 >= 6.0) { score4 = 2.5; letterGrade = 'CPlus'; }
-    else if (score10 >= 5.5) { score4 = 2.0; letterGrade = 'C'; }
-    else if (score10 >= 5.0) { score4 = 1.5; letterGrade = 'DPlus'; }
-    else if (score10 >= 4.0) { score4 = 1.0; letterGrade = 'D'; }
-    else { score4 = 0.0; letterGrade = 'F'; }
+    if (score10 >= 9.5) {
+      score4 = 4.0;
+      letterGrade = 'A+';
+    } else if (score10 >= 8.5) {
+      score4 = 3.8;
+      letterGrade = 'A';
+    } else if (score10 >= 8.0) {
+      score4 = 3.5;
+      letterGrade = 'B+';
+    } else if (score10 >= 7.0) {
+      score4 = 3.0;
+      letterGrade = 'B';
+    } else if (score10 >= 6.0) {
+      score4 = 2.5;
+      letterGrade = 'C+';
+    } else if (score10 >= 5.5) {
+      score4 = 2.0;
+      letterGrade = 'C';
+    } else if (score10 >= 4.5) {
+      score4 = 1.5;
+      letterGrade = 'D+';
+    } else if (score10 >= 4.0) {
+      score4 = 1.0;
+      letterGrade = 'D';
+    } else if (score10 >= 2.0) {
+      score4 = 0.5;
+      letterGrade = 'F+';
+    } else {
+      score4 = 0.0;
+      letterGrade = 'F';
+    }
 
     const evaluation = getEvaluation(score10);
 
@@ -278,18 +345,6 @@ const GradeScoreManager: React.FC = () => {
       return 'Pass';
     } else {
       return 'Retake';
-    }
-  }
-
-
-  const onScrollSelectProduct = (event: any) => {
-    var target = event.target
-    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-      setClassReq({
-        ...classReq,
-        page: classReq.page || 1 + 1,
-      })
-      target.scrollTo(0, target.scrollHeight);
     }
   }
 
@@ -373,7 +428,6 @@ const GradeScoreManager: React.FC = () => {
                       style={{ minHeight: '30px' }}
                       size="middle"
                       optionLabelProp="label"
-                      onPopupScroll={onScrollSelectProduct}
                       loading={loading}
                       onSelect={(selectedId: number) => {
                         const selectedClass = classes?.data?.find(c => c.id === selectedId);
@@ -388,7 +442,7 @@ const GradeScoreManager: React.FC = () => {
                       notFoundContent={classes?.data ? <Empty description="Không có dữ liệu" /> : null}
                     >
                       {classes?.data?.map((classes) => (
-                        <Select.Option key={classes.id} value={classes.id} label={classes.classCode}>
+                        <Select.Option key={classes.id} value={classes.id} label={classes.classCode + "-" + classes.className}>
                           {classes.classCode + "-" + classes.className}
                         </Select.Option>
                       ))}
@@ -440,7 +494,7 @@ const GradeScoreManager: React.FC = () => {
             {renderText("Mã môn học", classesItem?.course?.courseCode || '')}
             {renderText("Tên môn học", classesItem?.course?.courseTitle || '')}
             {renderText("Số tín", classesItem?.course?.credits || '')}
-            {renderText("Loại môn học", classesItem?.course?.courseType || '')}
+            {renderText("Loại môn học", <Tag color={courseTypeOptions.find((x) => x.value == classesItem?.course?.courseType)?.color}>{courseTypeOptions.find((x) => x.value == classesItem?.course?.courseType)?.label || classesItem?.course?.courseType}</Tag>)}
             <Row className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
               <Col xs={14} sm={14} md={12} lg={10} xl={8}>
                 <h5>Trạng thái: </h5>

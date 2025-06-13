@@ -256,3 +256,8 @@ export const genderLabels: Record<string, string> = {
   F: "Nữ",
   O: "Khác",
 };
+
+export const courseTypeOptions = [
+  { value: "Elective", label: 'Tự chọn', color: '#03A9F4' },
+  { value: "Mandatory", label: 'Bắt buộc', color: '#F44336' },
+];

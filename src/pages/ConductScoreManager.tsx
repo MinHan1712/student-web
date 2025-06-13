@@ -4,11 +4,12 @@ import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api";
+import getDetailsApi from "../apis/get.details.api";
 import postApi from "../apis/post.api";
 import '../assets/css/style.css';
 import { evaluationLabelMap, formItemLayout } from "../constants/general.constant";
-import { IClassCourseDTO, IClassFilter, IConductScoreDTO, IFacultyDTO, IGradeFilter, IMasterDataDTO } from "../interfaces/course";
-import getDetailsApi from "../apis/get.details.api";
+import { IClassCourseDTO, IClassFilter, IConductFacu, IConductScoreDTO, IFacultyDTO, IMasterDataDTO } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 
 const ConductScoreManager: React.FC = () => {
@@ -26,15 +27,16 @@ const ConductScoreManager: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [loadingScreen, setLoadingScreen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate();
+  const [type, setType] = useState(false);
 
   const [classReq, setClassReq] = useState<IClassFilter>({
     page: 0,
     size: 20,
-    "status.equals": true
+    "status.equals": true,
+    "sort": "lastModifiedDate,desc"
   });
 
-  const [conductReq, setConductReq] = useState({
+  const [conductReq, setConductReq] = useState<IConductFacu>({
     "classIName": ""
   });
 
@@ -45,14 +47,23 @@ const ConductScoreManager: React.FC = () => {
     );
     return '?' + new URLSearchParams(cleanedParams as any).toString();
   };
-
+  const navigate = useNavigate();
   const getListClassName = async (id: number) => {
     setLoading(true);
     try {
       const response = await getDetailsApi.getClassCourse(id);
       setListClassCourse(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -65,7 +76,16 @@ const ConductScoreManager: React.FC = () => {
       const response = await getApi.getConductScores(fullQuery);
       setListConduct(response.data);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -74,24 +94,42 @@ const ConductScoreManager: React.FC = () => {
   const getListFaculty = async () => {
     setLoading(true);
     try {
-      const fullQuery = toQueryString({ page: 0, size: 20 });
+      const fullQuery = toQueryString({ page: 0, size: 10000 });
       const response = await getApi.getFaculties(fullQuery);
       setListFaculty(response.data);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const createScoreConduct = async () => {
+  const createScoreConduct = async (formValue: IConductFacu) => {
     setLoading(true);
     try {
-      const fullQuery = toQueryString(conductReq);
+      const fullQuery = toQueryString(formValue);
       const response = await postApi.createCoursesA(fullQuery);
       getListConductScores();
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -105,7 +143,16 @@ const ConductScoreManager: React.FC = () => {
       const response = await getApi.getMasterData(fullQuery);
       setAcademicYear(response.data);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -132,7 +179,17 @@ const ConductScoreManager: React.FC = () => {
         });
         setIsEditing(false);
       })
-        .catch(() => {
+        .catch((err) => {
+          const error = err as AxiosError;
+
+          if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
           notification['error']({
             message: "Lỗi",
             description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
@@ -179,7 +236,7 @@ const ConductScoreManager: React.FC = () => {
       render: (_, record) => (
         isEditing ? (
           <InputNumber
-          style={{width: '50%'}}
+            style={{ width: '50%' }}
             value={record.score}
             onChange={(value) => {
               const score = value || 0;
@@ -202,18 +259,6 @@ const ConductScoreManager: React.FC = () => {
       ),
     }
   ];
-
-
-  const onScrollSelectProduct = (event: any) => {
-    var target = event.target
-    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-      setClassReq({
-        ...classReq,
-        page: classReq.page || 1 + 1,
-      })
-      target.scrollTo(0, target.scrollHeight);
-    }
-  }
 
   const confirmCreateInvExport = () => {
     confirm({
@@ -260,7 +305,6 @@ const ConductScoreManager: React.FC = () => {
     border: '1px solid #fff',
     borderRadius: '6px',
     display: 'flex',
-    // flexDirection: 'column',
     width: '100%',
   }
 
@@ -274,11 +318,21 @@ const ConductScoreManager: React.FC = () => {
   const handleSelectCourse = (course: string) => {
     setSelectedCourse(course);
     const matched = listClassCourse?.courses?.find(c => c.course === course);
-    const classes = matched?.className || [];
+    const classes = matched?.clasName || [];
 
     setClassOptions(classes.map(name => ({ label: name, value: name })));
     form.setFieldsValue({ className: undefined });
   };
+
+  const eventSummitForm = (formValue: IConductFacu) => {
+    console.log(type);
+    if (type) {
+      setConductReq(formValue);
+    } else {
+      createScoreConduct(formValue);
+    }
+  }
+
 
   return (
     <>
@@ -291,7 +345,7 @@ const ConductScoreManager: React.FC = () => {
           </Flex>
           <div style={providerStyleContent}>
             <Form form={form} name="course_filter" className="common-form wrapper-form"
-              style={{ width: '100%' }}>
+              style={{ width: '100%' }} onFinish={eventSummitForm}>
               <Flex gap="middle" justify="space-between" align={'center'}
                 style={{ width: '100%', padding: '5px' }}>
                 <div style={{ width: '30%' }}>
@@ -309,15 +363,15 @@ const ConductScoreManager: React.FC = () => {
                       // style={{ width: '100%' }}
                       size="middle"
                       optionLabelProp="label"
-                      onPopupScroll={onScrollSelectProduct}
                       loading={loading}
                       onSelect={(selectedId: number) => {
                         getListClassName(selectedId);
+                        form.setFieldsValue({ "course": "", classIName: "", academicYear: "" })
                       }}
                       notFoundContent={listFaculty ? <Empty description="Không có dữ liệu" /> : null}
                     >
                       {listFaculty?.map((faculty) => (
-                        <Select.Option key={faculty.id} value={faculty.id} label={faculty.facultyCode}>
+                        <Select.Option key={faculty.id} value={faculty.id} label={faculty.facultyName}>
                           {faculty.facultyCode + "-" + faculty.facultyName}
                         </Select.Option>
                       ))}
@@ -334,10 +388,20 @@ const ConductScoreManager: React.FC = () => {
                   >
                     <Select
                       placeholder="Chọn khóa học"
-                      options={courseOptions}
-                      loading={loading}
+                      className="d-flex w-100 form-select-search "
+                      style={{ minHeight: '30px' }}
+                      size="middle"
+                      optionLabelProp="label"
+                      disabled={!courseOptions}
                       onSelect={handleSelectCourse}
-                    />
+                      notFoundContent={courseOptions && courseOptions.length == 0 ? <Empty description="Không có dữ liệu" /> : null}
+                    >
+                      {courseOptions.map((item) => (
+                        <Select.Option key={item.value} value={item.value} label={item.label}>
+                          {item.value}
+                        </Select.Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </div>
 
@@ -368,44 +432,30 @@ const ConductScoreManager: React.FC = () => {
                   >
                     <Select
                       placeholder="Chọn năm học"
+                      className="d-flex w-100 form-select-search "
+                      style={{ minHeight: '30px' }}
+                      size="middle"
+                      optionLabelProp="label"
                       disabled={!academicYearM}
-                      notFoundContent={
-                        academicYearM && academicYearM.length === 0 ? (
-                          <Empty description="Không có năm học" />
-                        ) : null
-                      }
+                      notFoundContent={academicYearM && academicYearM.length == 0 ? <Empty description="Không có dữ liệu" /> : null}
                     >
-                      {academicYearM?.map((item) => (
-                        <Select.Option key={item.code + "-" + item.id} value={item.code} label={item.name}>
-                          {item.code + "-" + item.name}
+                      {academicYearM.map((item) => (
+                        <Select.Option key={item.id} value={item.code} label={item.name}>
+                          {item.name}
                         </Select.Option>
                       ))}
                     </Select>
                   </Form.Item>
-
                 </div>
                 <div style={{ width: '30%' }}>
                   <Flex>
                     {
                       <Button className="button btn-add d-flex flex-row justify-content-center align-content-center"
                         type="primary"
-                        onClick={async () => {
-                          try {
-                            const values = await form.validateFields();
-                            setConductReq(prev => ({
-                              ...prev,
-                              ['facultyId']: values['facultyId'],
-                              ['classIName']: values['classIName'],
-                              ['academicYear']: values['academicYear'],
-                              ['course']: values['course']
-                            }));
-                          } catch (error) {
-                            notification.error({
-                              message: 'Thiếu thông tin',
-                              description: 'Vui lòng chọn đầy đủ Khoa, Lớp và Năm học trước khi tìm kiếm.',
-                            });
-                          }
-
+                        onClick={(event) => {
+                          form.validateFields();
+                          setType(true);
+                          form.submit();
                         }}
                       >
                         Tìm kiếm
@@ -413,24 +463,10 @@ const ConductScoreManager: React.FC = () => {
                     }
                     <Button className="button btn-add d-flex flex-row justify-content-center align-content-center"
                       type="primary"
-                      onClick={async () => {
-                        try {
-                          const values = await form.validateFields();
-                          setConductReq(prev => ({
-                            ...prev,
-                            ['facultyId']: values['facultyId'],
-                            ['classIName']: values['classIName'],
-                            ['academicYear']: values['academicYear'],
-                            ['course']: values['course']
-                          }));
-                          createScoreConduct();
-                        } catch (error) {
-                          notification.error({
-                            message: 'Thiếu thông tin',
-                            description: 'Vui lòng chọn đầy đủ Khoa, Lớp và Năm học trước khi tìm kiếm.',
-                          });
-                        }
-
+                      onClick={() => {
+                        form.validateFields();
+                        setType(false);
+                        form.submit();
                       }}
                     >
                       Tạo
@@ -442,8 +478,8 @@ const ConductScoreManager: React.FC = () => {
 
               </Flex>
             </Form>
-          </div>
-        </Flex>
+          </div >
+        </Flex >
         <div className="table-wrapper">
           <Table
             rowKey={(record) => record.id}

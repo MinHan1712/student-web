@@ -1,6 +1,5 @@
 
 import Classes from "./pages/Classes";
-import ClassesDetails from "./pages/ClassesDetails";
 import Course from "./pages/Course";
 import GradeScoreManager from "./pages/GradeScoreManager";
 import FacultiesDetails from "./pages/FaculitesDetails";
@@ -13,6 +12,7 @@ import StatisticList from "./pages/StatisticList";
 import StaticDetails from "./pages/StatisticsDetail";
 import ClassManager from "./pages/ClassesManager";
 import StudentGradePage from "./pages/GradesSummary";
+import CourseDetails from "./pages/CourseDetails";
 
 const routes = [
 	{
@@ -119,6 +119,23 @@ const routes = [
 		state: "student/details",
 		path: "student/details",
 	},
+	{
+		index: true,
+		element: (
+			<CourseDetails />
+		),
+		state: "course/details",
+		path: "course/details",
+	},
+
+	// {
+	// 	index: true,
+	// 	element: (
+	// 		<LoginPage />
+	// 	),
+	// 	state: "login",
+	// 	path: "login",
+	// },
 ];
 
 export default routes;

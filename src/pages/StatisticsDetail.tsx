@@ -1,14 +1,14 @@
-import { PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Col, Empty, Flex, Pagination, Row, Select, Table, Tag } from "antd";
+import { Col, Empty, Flex, notification, Pagination, Row, Select, Table, Tag } from "antd";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import getApi from "../apis/get.api";
 import getDetailsApi from "../apis/get.details.api";
 import { renderText } from "../components/common";
-import { selectPageSize, StatusType, typeOptions, StudentStatuses } from "../constants/general.constant";
+import { selectPageSize, StudentStatuses, typeOptions } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IStatisticDetailDTO, IStatisticDTO } from "../interfaces/course";
-
+import { AxiosError } from "axios";
 const StaticDetails: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +24,8 @@ const StaticDetails: React.FC = () => {
     page: 0,
     size: 20,
     "statisticsId.equals": idClass,
-    "status.equals": true
+    "status.equals": true,
+    "sort": "lastModifiedDate,desc"
   });
 
   const toQueryString = (params: Record<string, any>): string => {
@@ -38,9 +39,18 @@ const StaticDetails: React.FC = () => {
     setLoading(true);
     try {
       const response = await getDetailsApi.getStatistic(idClass);
+     
       setStatistics(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -51,9 +61,18 @@ const StaticDetails: React.FC = () => {
     try {
       const fullQuery = toQueryString(detailStatisticsReq);
       const response = await getApi.getStatisticsDetail(fullQuery);
+      
       setDetailStatistics(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -77,6 +96,16 @@ const StaticDetails: React.FC = () => {
       title: "Họ và tên",
       dataIndex: ["student", "fullName"],
       key: "fullName",
+    },
+    {
+      title: "Lớp",
+      dataIndex: ["student", "clasName"],
+      key: "clasName",
+    },
+    {
+      title: "Khóa",
+      dataIndex: ["student", "courseYear"],
+      key: "courseYear",
     },
     {
       title: "Năm học",
@@ -115,21 +144,21 @@ const StaticDetails: React.FC = () => {
   ];
 
   const columns = statistics.type === 'Scholarship'
-    ? [...baseColumns.slice(0, 3), ...extraColumns, ...baseColumns.slice(3)]
+    ? [...baseColumns.slice(0, 4), ...extraColumns, ...baseColumns.slice(4)]
     : baseColumns;
 
   const scholarshipFields = [
     { label: "Mã thống kê", value: statistics?.statisticsCode },
     { label: "Năm học", value: statistics?.academicYear },
-    { label: "Loại", value: statistics?.type },
+    { label: "Loại", value: typeOptions.find(opt => opt.value === statistics?.type)?.label },
     { label: "Ghi chú", value: statistics?.notes }
   ];
 
   const schilarshipFieldsSecond = [
     { label: "Người tạo", value: statistics?.createdBy },
-    { label: "Ngày tạo", value: statistics?.createdDate },
+    { label: "Ngày tạo", value: dayjs(statistics?.createdDate).format("DD/MM/YYYY HH:mm") },
     { label: "Người sửa cuối", value: statistics?.lastModifiedBy },
-    { label: "Ngày sửa cuối", value: statistics?.lastModifiedDate }
+    { label: "Ngày sửa cuối", value: dayjs(statistics?.lastModifiedDate).format("DD/MM/YYYY HH:mm") }
   ]
 
   return (
@@ -179,6 +208,13 @@ const StaticDetails: React.FC = () => {
                 />
               ),
             },
+          }}
+          onRow={(record) => {
+            return {
+              onDoubleClick: () => {
+                navigate(`/student/details?id=${record?.student?.id}`);
+              },
+            };
           }}
           columns={columns}
           loading={loading}

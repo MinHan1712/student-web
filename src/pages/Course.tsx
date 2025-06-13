@@ -1,23 +1,26 @@
-import { Empty, Flex, Pagination, Select, Tag } from "antd";
+import { Empty, Flex, notification, Pagination, Select, Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api";
 import '../assets/css/style.css';
 import CourseSearch from "../components/filter/CourseSearch";
-import { selectPageSize, StatusType } from "../constants/general.constant";
+import { courseTypeOptions, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { ICourseDTO, ICourseFilter } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 const Course: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
   const [isReload, setIsReload] = useState(false);
-
+  const navigate = useNavigate();
   const [courseRes, setCourseRes] = useState<IResponseN<ICourseDTO[]>>();
 
   const [courseReq, setCourseReq] = useState<ICourseFilter>({
     page: 0,
-    size: 20
+    size: 20,
+    "sort": "lastModifiedDate,desc"
   });
 
   const toQueryString = (params: Record<string, any>): string => {
@@ -26,7 +29,6 @@ const Course: React.FC = () => {
     );
     return '?' + new URLSearchParams(cleanedParams as any).toString();
   };
-
   const getListCourse = async () => {
     setLoading(true);
     try {
@@ -35,7 +37,15 @@ const Course: React.FC = () => {
       setCourseRes(response);
 
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+       if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
     } finally { setLoading(false); }
   }
 
@@ -138,7 +148,10 @@ const Course: React.FC = () => {
       key: "courseType",
       width: "10%",
       align: "center",
-      render: (text) => <span>{text}</span>,
+      render: (value) => {
+        const statusInfo = courseTypeOptions.find((x) => x.value == value);
+        return <Tag color={statusInfo?.color}>{statusInfo?.label || value}</Tag>;
+      },
     },
     {
       title: "Trạng thái",
@@ -198,6 +211,13 @@ const Course: React.FC = () => {
                 );
               },
             },
+          }}
+          onRow={(record) => {
+            return {
+              onDoubleClick: () => {
+                navigate(`/course/details?id=${record.id}`);
+              },
+            };
           }}
           columns={courseColumns}
           loading={loading}

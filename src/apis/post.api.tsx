@@ -13,6 +13,7 @@ const endpoint = {
   grades: "grades/multi",
   conduct: "conduct-scores/multi",
   updateClass: (id: number) => `classes/update/${id}`,
+  deleteClass: (id: number) => `/classes/delete/${id}`,
   scorseConde: 'conduct/create',
   report: '/statistic/create'
 };
@@ -146,6 +147,17 @@ const postApi = {
     try {
       const response = await privateClient.post<Object>(
         endpoint.report, params
+      );
+
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  deleteClass: async (id: number): Promise<Object> => {
+    try {
+      const response = await privateClient.post<Object>(
+        endpoint.deleteClass(id)
       );
 
       return response.data;

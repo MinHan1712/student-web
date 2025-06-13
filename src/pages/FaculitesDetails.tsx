@@ -1,17 +1,18 @@
-import { Button, Col, Empty, Flex, Pagination, Row, Select, Table, Tag } from "antd";
+import { Col, Empty, Flex, notification, Pagination, Row, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import getApi from "../apis/get.api";
 import getDetailsApi from "../apis/get.details.api";
 import { renderText } from "../components/common";
 import { PositionTeaches, QualificationTeaches, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
-import { ICourseFacultyDTO, ICourseFacultyFilter, IFacultyDTO, ITeacherDTO, ITeacherFilter } from "../interfaces/course";
-import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { IClassFacu, ICourseFacultyDTO, ICourseFacultyFilter, IFacultyDTO, ITeacherDTO, ITeacherFilter } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 const FacultiesDetails: React.FC = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const idFaculty = params.get("id") || "";
@@ -19,22 +20,34 @@ const FacultiesDetails: React.FC = () => {
   const [faculties, setFaculties] = useState<IFacultyDTO>({ id: '0' });
   const [courseFaculties, setCourseFaculties] = useState<IResponseN<ICourseFacultyDTO[]>>();
   const [teachers, setTeachers] = useState<IResponseN<ITeacherDTO[]>>();
+  const [classScourse, setClassScourse] = useState<IResponseN<IClassFacu[]>>();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [pageSizeTeachers, setPageSizeTeachers] = useState(Number(selectPageSize[0].value));
   const [pageSizeCourse, setPageSizeCourse] = useState(Number(selectPageSize[0].value));
+  const [pageSizeClassScourse, setPageSizeClassScourse] = useState(Number(selectPageSize[0].value));
 
   const [teachersReq, setTeachersReq] = useState<ITeacherFilter>({
     page: 0,
     size: 20,
-    "facultiesId.equals": idFaculty
+    "facultiesId.equals": idFaculty,
+    "sort": "lastModifiedDate,desc"
   });
 
   const [courseFaReq, setCourseFaReq] = useState<ICourseFacultyFilter>({
     page: 0,
     size: 20,
-    "facultiesId.equals": idFaculty
+    "facultiesId.equals": idFaculty,
+    "sort": "lastModifiedDate,desc"
   });
+
+  const [classFaReq, setClassFaReq] = useState<ICourseFacultyFilter>({
+    page: 0,
+    size: 20,
+    "facultiesId.equals": idFaculty,
+    "sort": "lastModifiedDate,desc"
+  });
+
 
 
   const toQueryString = (params: Record<string, any>): string => {
@@ -48,9 +61,18 @@ const FacultiesDetails: React.FC = () => {
     setLoading(true);
     try {
       const response = await getDetailsApi.getFaculty(idFaculty);
+
       setFaculties(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -61,9 +83,18 @@ const FacultiesDetails: React.FC = () => {
     try {
       const fullQuery = toQueryString(courseFaReq);
       const response = await getApi.getCourseFaculties(fullQuery);
+
       setCourseFaculties(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -74,9 +105,39 @@ const FacultiesDetails: React.FC = () => {
     try {
       const fullQuery = toQueryString(teachersReq);
       const response = await getApi.getTeachers(fullQuery);
+
       setTeachers(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getListClassScourse = async () => {
+    setLoading(true);
+    try {
+      const fullQuery = toQueryString(classFaReq);
+      const response = await getApi.getClassScourse(fullQuery);
+      setClassScourse(response);
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -86,6 +147,7 @@ const FacultiesDetails: React.FC = () => {
     getFaculty();
     getListTeaches();
     getListCourseFaculties();
+    getListClassScourse();
   }, []);
 
   useEffect(() => {
@@ -122,13 +184,13 @@ const FacultiesDetails: React.FC = () => {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
       key: "startDate",
-      render: (text) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY") : "",
     },
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
       key: "endDate",
-      render: (text) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
+      render: (text) => (text ? dayjs(text).format("DD/MM/YYYY") : ""),
     },
     {
       title: "Chức vụ",
@@ -280,6 +342,32 @@ const FacultiesDetails: React.FC = () => {
       render: (text) => <span>{text}</span>,
     }];
 
+  const classScoColumns: ColumnsType<IClassFacu> = [
+    {
+      title: "Tên lớp",
+      dataIndex: "className",
+      key: "className",
+      // width: "250%",
+      align: "left",
+      render: (text) => (
+        <div className="style-text-limit-number-line2">
+          <span>{text}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Khóa học",
+      dataIndex: "courseYear",
+      key: "courseYear",
+      // width: "25%",
+      align: "left",
+      render: (text) => (
+        <div className="style-text-limit-number-line2">
+          <span>{text}</span>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -330,6 +418,13 @@ const FacultiesDetails: React.FC = () => {
           dataSource={teachers?.data}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+          onRow={(record) => {
+            return {
+              onDoubleClick: () => {
+                navigate(`/teaches/details?id=${record.id}`);
+              },
+            };
+          }}
         />
         <Flex gap="middle" justify="space-between" align="center" style={{ paddingTop: "10px" }}>
           <Flex gap="middle" align="center">
@@ -381,6 +476,13 @@ const FacultiesDetails: React.FC = () => {
               ),
             },
           }}
+          onRow={(record) => {
+            return {
+              onDoubleClick: () => {
+                navigate(`/course/details?id=${record?.course.id}`);
+              },
+            };
+          }}
           columns={courseColumns}
           loading={loading}
           dataSource={courseFaculties?.data}
@@ -400,7 +502,7 @@ const FacultiesDetails: React.FC = () => {
                   page: 0,
                   size: size,
                 });
-                setPageSizeTeachers(size);
+                setPageSizeCourse(size);
               }}
             />
           </Flex>
@@ -413,6 +515,61 @@ const FacultiesDetails: React.FC = () => {
             onChange={(page) => {
               setCourseFaReq({
                 ...courseFaReq,
+                page: page - 1,
+              });
+            }}
+          />
+        </Flex>
+      </div>
+
+      <div className="table-wrapper" style={{ paddingTop: '40px', width: '50%' }}>
+        <h3 className="title">Danh sách các lớp</h3>
+        <Table
+          rowKey={(record) => record.id}
+          size="small"
+          bordered={false}
+          components={{
+            header: {
+              cell: (props: any) => (
+                <th
+                  {...props}
+                  style={{ ...props.style, backgroundColor: "#012970", color: "#ffffff" }}
+                />
+              ),
+            },
+          }}
+          columns={classScoColumns}
+          loading={loading}
+          dataSource={classScourse?.data}
+          pagination={false}
+          locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+        />
+        <Flex gap="middle" justify="space-between" align="center" style={{ paddingTop: "10px" }}>
+          <Flex gap="middle" align="center">
+            <h5>Hiển thị</h5>
+            <Select
+              style={{ width: 70 }}
+              options={selectPageSize}
+              value={pageSizeClassScourse}
+              onChange={(size: number) => {
+                setClassFaReq({
+                  ...classFaReq,
+                  page: 0,
+                  size: size,
+                });
+                setPageSizeClassScourse(size);
+              }}
+            />
+          </Flex>
+
+          <Pagination
+            total={classScourse?.total || 0}
+            current={classFaReq.page || 0 + 1}
+            pageSize={classFaReq.size}
+            showSizeChanger={false}
+            onChange={(page) => {
+              setClassFaReq({
+                ...classFaReq,
                 page: page - 1,
               });
             }}

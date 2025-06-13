@@ -1,11 +1,12 @@
 import { CaretRightOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Col, Collapse, CollapseProps, Descriptions, Empty, Flex, Row, Spin, Table, Tag, notification } from 'antd';
+import { Col, Collapse, CollapseProps, Empty, Flex, notification, Row, Spin, Table, Tag } from 'antd';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getDetailsApi from '../apis/get.details.api';
-import { evaluationMap, evaluationOptions, letterGradeOptions, StudentStatuses } from '../constants/general.constant';
-import { SemesterSummaryResponse } from '../interfaces/course';
 import { renderText } from "../components/common";
+import { evaluationOptions, letterGradeOptions, StudentStatuses } from '../constants/general.constant';
+import { SemesterSummaryResponse } from '../interfaces/course';
+import { AxiosError } from "axios";
 const StudentGradePage = () => {
   const [data, setData] = useState<SemesterSummaryResponse>({ summary: [], grades: [], student: { id: 0 } });
   const [loading, setLoading] = useState<boolean>(false);
@@ -17,8 +18,18 @@ const StudentGradePage = () => {
   const fetchGrades = async () => {
     try {
       const response = await getDetailsApi.getSummary(idStudent);
+
       setData(response);
     } catch (err) {
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
       notification['error']({
         message: "Lỗi",
         description: 'Không thể tải dữ liệu bảng điểm',
@@ -37,50 +48,57 @@ const StudentGradePage = () => {
     {
       title: "Mã lớp",
       dataIndex: ["classes", "classCode"],
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: "Tên học phần",
       dataIndex: ["classes", "course", "courseTitle"],
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: "Số tín chỉ",
       dataIndex: "credit",
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: "Lần học",
       dataIndex: "studyAttempt",
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: "Lần thi",
       dataIndex: "examAttempt",
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: "Điểm hệ 10",
       dataIndex: "score10",
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: "Điểm hệ 4",
       dataIndex: "score4",
+      render: (value: string) => (<span>{value || ''}</span>),
     },
     {
       title: 'Điểm chữ',
       dataIndex: 'letterGrade',
-      render: (value: string) => getLetterGradeLabel(value),
+      render: (value: string) => getLetterGradeLabel(value) || '',
     },
     {
       title: 'Đánh giá',
       dataIndex: 'evaluation',
-      render: (value: string) => getEvaluationLabel(value),
+      render: (value: string) => getEvaluationLabel(value) || '',
     }
   ];
 
   const columns1 =
     [
-      { title: 'Năm học', dataIndex: 'academicYear', render: (value: string) => <strong>{value}</strong>, },
-      { title: 'Tổng TC', dataIndex: 'totalCredits', render: (value: string) => <strong>{value}</strong>, },
-      { title: 'ĐTB hệ 10', dataIndex: 'avgScore10', render: (value: string) => <strong>{value}</strong>, },
-      { title: 'ĐTB hệ 4', dataIndex: 'avgScore4', render: (value: string) => <strong>{value}</strong>, },
-      { title: 'Xếp loại', dataIndex: 'semesterRanking', render: (value: string) => <strong>{value}</strong>, },
+      { title: 'Năm học', dataIndex: 'academicYear', render: (value: string) => <strong>{value || ''}</strong>, },
+      { title: 'Tổng TC', dataIndex: 'totalCredits', render: (value: number) => <strong>{value || ''}</strong>, },
+      { title: 'ĐTB hệ 10', dataIndex: 'avgScore10', render: (value: number) => <strong>{value || ''}</strong>, },
+      { title: 'ĐTB hệ 4', dataIndex: 'avgScore4', render: (value: number) => <strong>{value || ''}</strong>, },
+      { title: 'Xếp loại', dataIndex: 'semesterRanking', render: (value: string) => <strong>{value || ''}</strong>, },
     ]
   // Nếu hiển thị điểm chữ trong bảng hoặc mô tả:
   const getLetterGradeLabel = (value: string) =>
@@ -89,39 +107,39 @@ const StudentGradePage = () => {
     evaluationOptions.find((item) => item.value === value)?.label || value;
 
   const col1 = [
-    { label: 'Họ tên', value: data.student.fullName },
-    { label: 'Mã SV', value: data.student.studentCode },
+    { label: 'Họ tên', value: data?.student?.fullName },
+    { label: 'Mã SV', value: data?.student?.studentCode },
     {
       label: 'Ngày sinh',
       value: data?.student?.dateOfBirth
-        ? new Date(data.student.dateOfBirth).toLocaleDateString()
+        ? new Date(data?.student?.dateOfBirth).toLocaleDateString()
         : '',
     }
   ]
   const col2 = [
-    { label: 'Giới tính', value: data.student.gender },
-    { label: 'Số điện thoại', value: data.student.phoneNumber },
-    { label: 'Email', value: data.student.email }
+    { label: 'Giới tính', value: data?.student?.gender },
+    { label: 'Số điện thoại', value: data?.student?.phoneNumber },
+    { label: 'Email', value: data?.student?.email }
   ]
 
   const col3 = [
-    { label: 'Địa chỉ', value: data.student.address },
-    { label: 'Ghi chú', value: data.student.notes },
-    { label: 'Trạng thái', value: data.student.status },
+    { label: 'Địa chỉ', value: data?.student?.address },
+    { label: 'Ghi chú', value: data?.student?.notes },
+    { label: 'Trạng thái', value: data?.student?.status },
     {
       label: 'Ngày nhập học',
       value: data?.student?.dateEnrollment
-        ? new Date(data.student.dateEnrollment).toLocaleDateString()
+        ? new Date(data?.student?.dateEnrollment).toLocaleDateString()
         : '',
     }]
   const col4 = [
-    { label: 'Lớp', value: data.student.clasName },
-    { label: 'Khoa', value: <a onClick={() => navigate(`/faculties/details?id=${data.student?.faculties?.id}`)}>{data.student?.faculties?.facultyName || ''}</a> },
-    { label: 'Khóa', value: data.student.courseYear },
+    { label: 'Lớp', value: data?.student?.clasName },
+    { label: 'Khoa', value: <a onClick={() => navigate(`/faculties/details?id=${data?.student?.faculties?.id}`)}>{data?.student?.faculties?.facultyName || ''}</a> },
+    { label: 'Khóa', value: data?.student?.courseYear },
     {
       label: 'Ngày nhập học',
       value: data?.student?.dateEnrollment
-        ? new Date(data.student.dateEnrollment).toLocaleDateString()
+        ? new Date(data?.student?.dateEnrollment).toLocaleDateString()
         : '',
     }]
 
@@ -174,8 +192,8 @@ const StudentGradePage = () => {
                 <h5>Trạng thái: </h5>
               </Col>
               <Col xs={14} sm={14} md={12} lg={14} xl={16}>
-                <Tag color={StudentStatuses.find((s) => s.value === data.student.status)?.color}>
-                  {StudentStatuses.find((s) => s.value === data.student.status)?.label}
+                <Tag color={StudentStatuses.find((s) => s.value === data?.student?.status)?.color}>
+                  {StudentStatuses.find((s) => s.value === data?.student?.status)?.label}
                 </Tag>
               </Col>
             </Row>
@@ -213,7 +231,7 @@ const StudentGradePage = () => {
       ) : (<>
         <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
           <Flex gap="middle" justify="flex-start" align={'center'} style={{ width: '100%' }}>
-            <h3 className="title">Thông tin sinh viên-{data.student.studentCode}</h3>
+            <h3 className="title">Thông tin sinh viên-{data?.student?.studentCode}</h3>
           </Flex>
         </Flex>
 

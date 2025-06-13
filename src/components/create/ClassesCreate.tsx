@@ -2,18 +2,21 @@ import {
   CloseCircleOutlined,
   PlusCircleOutlined
 } from "@ant-design/icons";
-import { Button, DatePicker, Flex, Form, Input, InputNumber, Modal, notification, Select } from "antd";
+import { Button, DatePicker, Empty, Flex, Form, Input, InputNumber, Modal, notification, Select } from "antd";
 import dayjs from 'dayjs';
 import { useEffect, useState } from "react";
 import getApi from "../../apis/get.api";
 import postApi from "../../apis/post.api";
 import { ClassTypes, DeliveryModes, formItemLayout } from "../../constants/general.constant";
 import { IResponseN } from "../../interfaces/common";
-import { IClassDTO, ICourseDTO, ICourseFilter, ITeacherDTO, ITeacherFilter } from "../../interfaces/course";
+import { IClassDTO, ICourseDTO, ICourseFilter, IMasterDataDTO, ITeacherDTO, ITeacherFilter } from "../../interfaces/course";
+import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 interface IProviderInformationProps {
   open: boolean;
   onCancel: () => void;
+  academicYear: IMasterDataDTO[];
 }
 
 const ClassesCreate = (props: IProviderInformationProps) => {
@@ -23,11 +26,13 @@ const ClassesCreate = (props: IProviderInformationProps) => {
   const [teachers, setTeachers] = useState<IResponseN<ITeacherDTO[]>>();
   const [courseReq, setCourseReq] = useState<ICourseFilter>({
     page: 0,
-    size: 20
+    size: 20,
+    "sort": "lastModifiedDate,desc"
   });
   const [teachersReq, setTeachersReq] = useState<ITeacherFilter>({
     page: 0,
-    size: 20
+    size: 20,
+    "sort": "lastModifiedDate,desc"
   });
   const eventSummitForm = (formValue: IClassDTO) => {
     create(formValue);
@@ -41,7 +46,8 @@ const ClassesCreate = (props: IProviderInformationProps) => {
         startDate: value.startDate ? dayjs(value.startDate).toDate().toISOString() : undefined,
         endDate: value.endDate ? dayjs(value.endDate).toDate().toISOString() : undefined,
         teachers: { id: value.teachers },
-        course: { id: value.course }
+        course: { id: value.course },
+        status: true,
 
       };
       await postApi.createClasses(payload).then((response) => {
@@ -54,7 +60,18 @@ const ClassesCreate = (props: IProviderInformationProps) => {
         form.resetFields();
         props.onCancel();
       })
-        .catch(() => {
+        .catch((err) => {
+          const error = err as AxiosError;
+
+          if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
+
           notification['error']({
             message: "Lỗi",
             description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
@@ -76,14 +93,30 @@ const ClassesCreate = (props: IProviderInformationProps) => {
     return '?' + new URLSearchParams(cleanedParams as any).toString();
   };
 
+  const navigate = useNavigate();
   const getListCourse = async () => {
     setLoading(true);
     try {
       const fullQuery = toQueryString(courseReq);
       const response = await getApi.getCourses(fullQuery);
+
       setCourses(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
+
+      notification['error']({
+        message: "Lỗi",
+        description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+      });
     } finally {
       setLoading(false);
     }
@@ -96,7 +129,21 @@ const ClassesCreate = (props: IProviderInformationProps) => {
       const response = await getApi.getTeachers(fullQuery);
       setTeachers(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
+
+      notification['error']({
+        message: "Lỗi",
+        description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+      });
     } finally {
       setLoading(false);
     }
@@ -201,7 +248,7 @@ const ClassesCreate = (props: IProviderInformationProps) => {
                   label={<span style={{ fontWeight: "550", fontSize: "14px" }}>Tín chỉ</span>}
 
                 >
-                  <InputNumber placeholder="Nhập số tín chỉ" min={0} style={{ width: '100%' }} />
+                  <InputNumber disabled min={0} style={{ width: '100%' }} />
                 </Form.Item>
               </div>
 
@@ -211,7 +258,22 @@ const ClassesCreate = (props: IProviderInformationProps) => {
                   name="academicYear"
                   label={<span style={{ fontWeight: "550", fontSize: "14px" }}>Năm học</span>}
                 >
-                  <Input placeholder="Nhập năm học (vd: 2024-2025)" />
+                  <Select
+                    placeholder="Chọn năm học"
+                    className="d-flex w-100 form-select-search "
+                    style={{ minHeight: '30px' }}
+                    size="middle"
+                    optionLabelProp="label"
+                    disabled={!props.academicYear}
+                    notFoundContent={props.academicYear && props.academicYear.length == 0 ? <Empty description="Không có dữ liệu" /> : null}
+                  >
+                    {props.academicYear.map((item) => (
+                      <Select.Option key={item.id} value={item.code} label={item.name}>
+                        {item.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+
                 </Form.Item>
               </div>
             </Flex>
@@ -230,7 +292,7 @@ const ClassesCreate = (props: IProviderInformationProps) => {
                 <Form.Item
                   {...formItemLayout}
                   name="totalNumberOfStudents"
-                  label={<span style={{ fontWeight: "550", fontSize: "14px" }}>Số sinh viên</span>}
+                  label={<span style={{ fontWeight: "550", fontSize: "14px" }}>Số sinh viên tối đa</span>}
                 >
                   <InputNumber placeholder="Nhập số sinh viên" min={0} style={{ width: '100%' }} />
                 </Form.Item>
@@ -301,12 +363,13 @@ const ClassesCreate = (props: IProviderInformationProps) => {
                   rules={[{ required: true, message: 'Vui lòng chọn môn học' }]}
                 >
                   <Select
-                    showSearch
                     placeholder="Chọn môn học"
                     optionFilterProp="children"
                     allowClear
                     onSelect={(value) => {
-                      form.setFieldsValue({ course: value, credits: value.credits });
+                      console.log(value);
+                      const co = (courses?.data || []).find((x: ICourseDTO) => x.id === value);
+                      form.setFieldsValue({ course: value, credits: co?.credits });
                     }}
                   >
                     {courses?.data?.map((course) => (

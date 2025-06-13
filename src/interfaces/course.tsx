@@ -1,10 +1,10 @@
 import { Auditing, IPagingAndSortRequest } from "./common";
 
 export interface ICourseDTO extends Auditing {
-  id: number;
+  id: string;
   courseCode?: string;
   courseTitle?: string;
-  credits?: string;
+  credits?: number;
   lecture?: string;
   tutorialDiscussion?: string;
   practical?: string;
@@ -23,6 +23,7 @@ export interface ICourseFilter extends IPagingAndSortRequest {
   "courseTitle.contains"?: string;
   "status.equals"?: boolean;
   "semester.contains"?: string;
+  "sort"?:string;
 }
 
 export interface ICourseFacultyDTO extends Auditing {
@@ -33,6 +34,8 @@ export interface ICourseFacultyDTO extends Auditing {
 
 export interface ICourseFacultyFilter extends IPagingAndSortRequest {
   "facultiesId.equals"?: string;
+  "courseId.equals"?: string;
+  "sort"?:string;
 }
 //--------------------------teaches---------------------//
 export interface ITeacherDTO extends Auditing {
@@ -56,6 +59,7 @@ export interface ITeacherFilter extends IPagingAndSortRequest {
   "position.equals"?: string;
   "qualification.equals"?: string;
   "facultiesId.equals"?: string;
+  "sort"?:string;
 }
 
 //--------------------------student---------------------//
@@ -71,8 +75,8 @@ export interface IStudentDTO extends Auditing {
   notes?: string;
   status?: string;
   dateEnrollment?: string;
-  clasName?:string;
-  courseYear?:string;
+  clasName?: string;
+  courseYear?: string;
   faculties?: IFacultyDTO
 }
 
@@ -80,6 +84,7 @@ export interface IStudentFilter extends IPagingAndSortRequest {
   "studentCode.contains"?: string;
   "phoneNumber.contains"?: string;
   "status.equals"?: string;
+  "sort"?:string;
 }
 
 //--------------------------Faculty---------------------//
@@ -98,6 +103,7 @@ export interface IFacultyDTO extends Auditing {
 export interface IFacultyFilter extends IPagingAndSortRequest {
   "facultyCode.contains"?: string;
   "facultyName.contains"?: string;
+  "sort"?:string;
   // "status.equals"?: string;
 }
 
@@ -129,8 +135,9 @@ export interface IClassFilter extends IPagingAndSortRequest {
   "startDate.greaterThanOrEqual"?: string | null;
   "endDate.lessThanOrEqual"?: string | null;
   "status.equals"?: boolean;
-  "classesId.equals"?: string | null;
-  "teachersId.equals"?:string | null;
+  "teachersId.equals"?: string | null;
+  "courseId.equals"?:string;
+  "sort"?:string;
 }
 
 
@@ -149,6 +156,7 @@ export interface IClassRegistrationsFilter extends IPagingAndSortRequest {
   "classesId.equals"?: string;
   "teachersId.equals"?: string;
   "status.notIn"?: string[];
+  "sort"?:string;
 }
 
 
@@ -177,6 +185,7 @@ export interface IGradeDTO {
 export interface IGradeFilter extends IPagingAndSortRequest {
   "classesId.equals"?: string | number | null;
   "status.equals"?: boolean;
+  "sort"?:string;
 }
 
 
@@ -212,8 +221,9 @@ export interface IStatisticFilter {
   page: number;
   size: number;
   "status.equals"?: boolean;
-  "type.equals"?:string;
-  "academicYear.equals"?:string;
+  "type.equals"?: string;
+  "academicYear.equals"?: string;
+  "sort"?:string;
   // Thêm các filter khác nếu cần
 }
 
@@ -224,7 +234,7 @@ export interface IStatisticDetailDTO {
   graduationDate?: string;
   notes?: string;
   status?: boolean;
-  score?:string;
+  score?: string;
   createdBy?: string;
   createdDate?: string;
   lastModifiedBy?: string;
@@ -251,7 +261,7 @@ export interface IClassUpdateDTO extends Auditing {
   academicYear?: string;
   parentId?: string;
   teachersId?: number,
-  courseId?: number,
+  courseId?: string,
   studentIds?: number[],
   studentIdRemove?: number[];
 }
@@ -274,7 +284,7 @@ export interface IClassUpdateDTO extends Auditing {
   academicYear?: string;
   parentId?: string;
   teachersId?: number,
-  courseId?: number,
+  courseId?: string,
   studentIds?: number[],
   studentIdRemove?: number[];
 }
@@ -311,8 +321,8 @@ export interface IClassCourseDTO extends Auditing {
   facultyId?: number;
 }
 
-export interface IClassNameDTO{
-  className?: string[];
+export interface IClassNameDTO {
+  clasName?: string[];
   course?: string;
 }
 
@@ -322,4 +332,19 @@ export interface IReportFilter {
   academicYear: string;
   minTotalCredits: number;
   node: string;
+}
+
+export interface IClassFacu {
+  id: number,
+  className?: string;
+  courseYear?: string;
+  faculties?: IFacultyDTO
+}
+
+
+export interface IConductFacu {
+  classIName?: string,
+  facultyId?: string;
+  academicYear?: string;
+  course?: string
 }

@@ -1,4 +1,4 @@
-import { Empty, Flex, Pagination, Select, Table } from "antd";
+import { Empty, Flex, notification, Pagination, Select, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import FaculitiesSearch from "../components/filter/FaculitiesSearch";
 import { selectPageSize } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IFacultyDTO, IFacultyFilter } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 const FacultiesList: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,8 @@ const FacultiesList: React.FC = () => {
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
   const [facultyReq, setFacultyReq] = useState<IFacultyFilter>({
     page: 0,
-    size: 20
+    size: 20,
+    "sort": "lastModifiedDate,desc"
   });
 
   const columns: ColumnsType<IFacultyDTO> = [
@@ -40,7 +42,7 @@ const FacultiesList: React.FC = () => {
       title: "Ngày thành lập",
       dataIndex: "establishedDate",
       key: "establishedDate",
-      render: (text) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY") : "",
     },
     {
       title: "Số điện thoại",
@@ -72,9 +74,20 @@ const FacultiesList: React.FC = () => {
     try {
       const fullQuery = toQueryString(facultyReq);
       const response = await getApi.getFaculties(fullQuery);
+
       setFaculties(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+      console.error(error);
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -124,7 +137,7 @@ const FacultiesList: React.FC = () => {
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
           onRow={(record) => {
             return {
-              onClick: () => {
+              onDoubleClick: () => {
                 navigate(`/faculties/details?id=${record.id}`);
               },
             };

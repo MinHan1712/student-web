@@ -1,17 +1,20 @@
-import { Button, Empty, Flex, Pagination, Select, Table, Tag } from "antd";
+import { PlusCircleOutlined } from "@ant-design/icons";
+import { Button, Empty, Flex, Modal, notification, Pagination, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api"; // Giả sử có phương thức getClasses
+import postApi from "../apis/post.api";
+import ClassesCreate from "../components/create/ClassesCreate";
 import ClassesSearch from "../components/filter/ClassesSearch";
 import { ClassTypes, DeliveryModes, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
-import { IClassDTO, IClassFilter } from "../interfaces/course";
-import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import ClassesCreate from "../components/create/ClassesCreate";
+import { IClassDTO, IClassFilter, IMasterDataDTO } from "../interfaces/course";
+import { AxiosError } from "axios";
 
 const Classes: React.FC = () => {
+  const { confirm } = Modal;
   const navigate = useNavigate();
   const [classes, setClasses] = useState<IResponseN<IClassDTO[]>>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,10 +22,11 @@ const Classes: React.FC = () => {
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
   const [classReq, setClassReq] = useState<IClassFilter>({
     page: 0,
-    size: 20
+    size: 20,
+    "sort": "lastModifiedDate,desc"
   });
   const [openFormCreate, setOpenFormCreate] = useState(false);
-
+  const [academicYearM, setAcademicYear] = useState<IMasterDataDTO[]>([]);
   const columns: ColumnsType<IClassDTO> = [
     {
       title: "Mã lớp",
@@ -58,13 +62,13 @@ const Classes: React.FC = () => {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
       key: "startDate",
-      render: (text) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY") : '',
     },
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
       key: "endDate",
-      render: (text) => dayjs(text).format("DD/MM/YYYY"),
+      render: (text) => text ? dayjs(text).format("DD/MM/YYYY") : '',
     },
     {
       title: "Loại lớp",
@@ -100,13 +104,105 @@ const Classes: React.FC = () => {
       dataIndex: "academicYear",
       key: "academicYear",
     },
+    {
+      title: "Xóa",
+      dataIndex: "status",
+      key: "status",
+      render: (_, record) => (
+        <Button
+          color="danger" variant="solid"
+          style={{ marginRight: '8px' }}
+          disabled={!record?.status}
+          onClick={() => confirmDelete(record.id)}
+        >
+          Hủy
+        </Button>
+      ),
+    },
   ];
+
+  const deleteClass = async (id: number) => {
+    try {
+      await postApi.deleteClass(id).then((response) => {
+        setClassReq({ ...classReq, page: 0 })
+      })
+        .catch((err) => {
+          const error = err as AxiosError;
+
+          if (error.response?.status === 401) {
+            notification.error({
+              message: "Lỗi",
+              description: "Hết phiên đăng nhập",
+            });
+            navigate('/login');
+            return;
+          }
+          notification['error']({
+            message: "Lỗi",
+            description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+          });
+        })
+
+    } catch (err) {
+      notification['error']({
+        message: "Lỗi",
+        description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+      });
+    }
+  }
+
+  const confirmDelete = (id: number) => {
+    confirm({
+      title: 'Bạn có đồng ý xóa không?',
+      okText: "Đồng ý",
+      cancelText: 'Hủy',
+      async onOk() {
+        return new Promise<void>((resolve, reject) => {
+          deleteClass(id)
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              notification['error']({
+                message: "Lỗi",
+                description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+              });
+              resolve();
+            });
+        });
+      },
+      onCancel() { },
+    });
+  }
 
   const toQueryString = (params: Record<string, any>): string => {
     const cleanedParams = Object.fromEntries(
       Object.entries(params).filter(([_, value]) => value !== undefined)
     );
     return '?' + new URLSearchParams(cleanedParams as any).toString();
+  };
+
+  const getMasterData = async () => {
+    setLoading(true);
+    try {
+      const key = { "key.equals": "ACADEMIC", page: 0, size: 100000 }
+      const fullQuery = toQueryString(key);
+      const response = await getApi.getMasterData(fullQuery);
+      setAcademicYear(response.data || []);
+    } catch (err) {
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getList = async () => {
@@ -116,7 +212,16 @@ const Classes: React.FC = () => {
       const response = await getApi.getClasses(fullQuery);
       setClasses(response);
     } catch (err) {
-      console.log(err);
+      const error = err as AxiosError;
+
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -133,26 +238,8 @@ const Classes: React.FC = () => {
   useEffect(() => {
     setIsReload(false);
     getList();
+    getMasterData();
   }, [classReq, isReload])
-
-
-  //  const handleDateChangeStart = (date: Dayjs | null, dateString: string | string[]) => {
-  //       // Chuyển ngày đã chọn thành ISO 8601
-  //       const isoDate = date ? date.toISOString() : null;
-  //       setClassReq(prev => ({
-  //         ...prev,
-  //         ["startDate.greaterThanOrEqual"]: isoDate,
-  //       }));
-  //     };
-
-  //     const handleDateChangeEnd = (date: Dayjs | null, dateString: string | string[]) => {
-  //       // Chuyển ngày đã chọn thành ISO 8601
-  //       const isoDate = date ? date.toISOString() : null;
-  //       setClassReq(prev => ({
-  //         ...prev,
-  //         ["endDate.greaterThanOrEqual"]: isoDate,
-  //       }));
-  //     };
 
   return (
     <>
@@ -192,7 +279,7 @@ const Classes: React.FC = () => {
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
           onRow={(record) => {
             return {
-              onClick: () => {
+              onDoubleClick: () => {
                 navigate(`/classes/details?id=${record.id}`);
               },
             };
@@ -232,6 +319,7 @@ const Classes: React.FC = () => {
       </div>
       <ClassesCreate
         open={openFormCreate}
+        academicYear={academicYearM}
         onCancel={() => {
           setOpenFormCreate(false);
           getList();
