@@ -14,7 +14,7 @@ const items: MenuItem[] = [
         children: [
             {
                 key: '3',
-                label: <Link to="./faculties" className='text-decoration-none'>Chi tiết</Link>,
+                label: <Link to="./faculties" className='text-decoration-none'>Danh sách khoa</Link>,
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
             },
             {
@@ -27,8 +27,34 @@ const items: MenuItem[] = [
     },
     {
         key: '5',
-        label: <Link to="./students" className='text-decoration-none'>Sinh viên</Link>,
+        label: 'Sinh viên',
+        children: [
+            {
+                key: '13',
+                label: <Link to="./students" className='text-decoration-none'>Thông tin sinh viên</Link>,
+                // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
+            },
+           
+        ],
         // icon: <img alt="icon sider bar" src={require('../../assets/img/sp.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
+    },
+    {
+        key: '9',
+        label: 'Quản lý học phần',
+        // icon: <img alt="icon sider bar" src={require('../../assets/img/kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
+        children: [
+            {
+                key: '10',
+                label: <Link to="./course" className='text-decoration-none'>Học phần</Link>,
+                // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
+            },
+            {
+                key: '11',
+                label: <Link to="./classes" className='text-decoration-none'>Lớp học phần</Link>,
+                // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
+            },
+        ],
+
     },
     {
         key: '6',
@@ -50,24 +76,6 @@ const items: MenuItem[] = [
                 label: <Link to="./statistic" className='text-decoration-none'>Thống kê</Link>,
                 // icon: <img alt="icon sider bar" src={require('../../assets/img/xuat-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
             }
-        ],
-
-    },
-    {
-        key: '9',
-        label: 'Quản lý học phần',
-        // icon: <img alt="icon sider bar" src={require('../../assets/img/kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
-        children: [
-            {
-                key: '10',
-                label: <Link to="./course" className='text-decoration-none'>Học phần</Link>,
-                // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
-            },
-            {
-                key: '11',
-                label: <Link to="./classes" className='text-decoration-none'>Lớp học phần</Link>,
-                // icon: <img alt="icon sider bar" src={require('../../assets/img/nhap-kho.png')} style={{ width: '25px', height: '25px', marginRight: '5px', opacity: 1 }} />,
-            },
         ],
 
     }
@@ -111,7 +119,7 @@ const SideLayout = (props: any) => {
                             shape='circle'
                             src={require('../../assets/img/logo.png')} />
                         {
-                            props.collapsed ? "" : <div style={{ padding: '5px', fontWeight: '600', lineHeight: '17px' }}>Han</div>
+                            props.collapsed ? "" : <div style={{ padding: '5px', fontWeight: '600', lineHeight: '17px' }}>Hải</div>
                         }
                     </div>
 

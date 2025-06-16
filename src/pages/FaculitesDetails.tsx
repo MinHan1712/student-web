@@ -1,8 +1,8 @@
-import { Col, Empty, Flex, notification, Pagination, Row, Select, Table, Tag } from "antd";
+import { Breadcrumb, Button, Col, DatePicker, Empty, Flex, Input, notification, Pagination, Row, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import getApi from "../apis/get.api";
 import getDetailsApi from "../apis/get.details.api";
 import { renderText } from "../components/common";
@@ -10,6 +10,8 @@ import { PositionTeaches, QualificationTeaches, selectPageSize, StatusType } fro
 import { IResponseN } from "../interfaces/common";
 import { IClassFacu, ICourseFacultyDTO, ICourseFacultyFilter, IFacultyDTO, ITeacherDTO, ITeacherFilter } from "../interfaces/course";
 import { AxiosError } from "axios";
+import postApi from "../apis/post.api";
+import putApi from "../apis/put.api";
 
 const FacultiesDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -26,6 +28,9 @@ const FacultiesDetails: React.FC = () => {
   const [pageSizeTeachers, setPageSizeTeachers] = useState(Number(selectPageSize[0].value));
   const [pageSizeCourse, setPageSizeCourse] = useState(Number(selectPageSize[0].value));
   const [pageSizeClassScourse, setPageSizeClassScourse] = useState(Number(selectPageSize[0].value));
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editFaculty, setEditFaculty] = useState<IFacultyDTO>({ ...faculties });
 
   const [teachersReq, setTeachersReq] = useState<ITeacherFilter>({
     page: 0,
@@ -63,6 +68,7 @@ const FacultiesDetails: React.FC = () => {
       const response = await getDetailsApi.getFaculty(idFaculty);
 
       setFaculties(response);
+      setEditFaculty(response);
     } catch (err) {
       const error = err as AxiosError;
       if (error.response?.status === 401) {
@@ -371,28 +377,157 @@ const FacultiesDetails: React.FC = () => {
 
   return (
     <>
-
+      <Breadcrumb style={{ fontSize: '20px', paddingBottom: '10px' }}
+        items={[
+          {
+            title: <Link to={`/faculties`}>Danh sách khoa</Link>,
+          },
+          {
+            title: <span style={{ fontWeight: 'bold' }}>Chi tiết khoa</span>,
+          },
+        ]}
+      />
       <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
         <Flex gap="middle" justify="flex-start" align={'center'} style={{ width: '100%' }}>
           <h3 className="title">Chi tiết khoa {faculties.facultyCode}</h3>
         </Flex>
-        <Row style={{ margin: "5px", width: '100%', background: 'white', padding: '10px', borderRadius: '5px' }} className="d-flex ant-row-flex-space-around">
+        <Row
+          style={{ margin: "5px", width: '100%', background: 'white', padding: '10px', borderRadius: '5px' }}
+          className="d-flex ant-row-flex-space-around"
+        >
           <Col span={8} style={{ padding: "5px" }}>
-            {renderText("Mã khoa", faculties.facultyCode || '')}
-            {renderText("Tên khoa", faculties.facultyName || '')}
-            {renderText("Mô tả", faculties.description || '')}
+            {isEditMode ? (
+              <>
+                <div className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+                  <strong>Mã khoa:</strong>
+                  <Input
+                    value={editFaculty.facultyCode}
+                    disabled
+                    onChange={(e) => setEditFaculty({ ...editFaculty, facultyCode: e.target.value })}
+                  />
+                </div>
+                <div className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+                  <strong>Tên khoa:</strong>
+                  <Input
+                    value={editFaculty.facultyName}
+                    onChange={(e) => setEditFaculty({ ...editFaculty, facultyName: e.target.value })}
+                  />
+                </div>
+                <div className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+                  <strong>Mô tả:</strong>
+                  <Input.TextArea
+                    value={editFaculty.description}
+                    onChange={(e) => setEditFaculty({ ...editFaculty, description: e.target.value })}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {renderText("Mã khoa", faculties.facultyCode || '')}
+                {renderText("Tên khoa", faculties.facultyName || '')}
+                {renderText("Mô tả", faculties.description || '')}
+              </>
+            )}
           </Col>
 
           <Col span={8} style={{ padding: "5px" }}>
-            {renderText("Ngày thành lập", faculties.establishedDate ? dayjs(faculties.establishedDate).format("DD/MM/YYYY") : "")}
-            {renderText("Số điện thoại", faculties.phoneNumber || '')}
-            {renderText("Vị trí", faculties.location || '')}
+            {isEditMode ? (
+              <>
+                <div className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+                  <strong>Ngày thành lập:</strong>
+                  <DatePicker
+                    value={editFaculty.establishedDate ? dayjs(editFaculty.establishedDate) : undefined}
+                    onChange={(date) =>
+                      setEditFaculty({
+                        ...editFaculty,
+                        establishedDate: date ? date.toISOString() : undefined,
+                      })
+                    }
+                    format="DD/MM/YYYY"
+                    style={{ width: "100%" }}
+                  />
+                </div>
+                <div className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+                  <strong>Số điện thoại:</strong>
+                  <Input
+                    value={editFaculty.phoneNumber}
+                    onChange={(e) => setEditFaculty({ ...editFaculty, phoneNumber: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <strong>Vị trí:</strong>
+                  <Input
+                    value={editFaculty.location}
+                    onChange={(e) => setEditFaculty({ ...editFaculty, location: e.target.value })}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {renderText("Ngày thành lập", faculties.establishedDate ? dayjs(faculties.establishedDate).format("DD/MM/YYYY") : "")}
+                {renderText("Số điện thoại", faculties.phoneNumber || '')}
+                {renderText("Vị trí", faculties.location || '')}
+              </>
+            )}
           </Col>
 
           <Col span={8} style={{ padding: "5px" }}>
-            <div className="style-text-limit-number-line2">
-              {renderText("Ghi chú", faculties.notes || '')}
-            </div>
+            {isEditMode ? (
+              <>
+                <div className="d-flex align-items-center mb-1" style={{ width: '100%', paddingBottom: '10px' }}>
+                  <strong>Ghi chú:</strong>
+                  <Input.TextArea
+                    value={editFaculty.notes}
+                    onChange={(e) => setEditFaculty({ ...editFaculty, notes: e.target.value })}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="style-text-limit-number-line2">
+                {renderText("Ghi chú", faculties.notes || '')}
+              </div>
+            )}
+            <Flex gap="small" justify="flex-end">
+              {!isEditMode ? (
+                <Button type="primary" onClick={() => {
+                  setEditFaculty({ ...faculties });
+                  setIsEditMode(true);
+                }}>
+                  Cập nhật
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    type="primary"
+                    onClick={async () => {
+                      try {
+                        // Gửi API cập nhật
+                        await putApi.putFaculty(editFaculty.id, {
+                          ...editFaculty,
+                          establishedDate: editFaculty.establishedDate ? dayjs(editFaculty.establishedDate).toDate().toISOString() : undefined,
+                          lastModifiedDate: dayjs().toDate().toISOString()
+                        });
+                        notification.success({
+                          message: "Cập nhật thành công",
+                        });
+                        setIsEditMode(false);
+                        getFaculty(); // refresh lại dữ liệu sau cập nhật
+                      } catch (error) {
+                        notification.error({
+                          message: "Lỗi",
+                          description: "Cập nhật thất bại",
+                        });
+                      }
+                    }}
+                  >
+                    Lưu
+                  </Button>
+                  <Button onClick={() => setIsEditMode(false)}>
+                    Hủy
+                  </Button>
+                </>
+              )}
+            </Flex>
           </Col>
         </Row>
       </Flex>

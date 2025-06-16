@@ -1,7 +1,7 @@
 import { CaretRightOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Col, Collapse, CollapseProps, Empty, Flex, notification, Row, Spin, Table, Tag } from 'antd';
+import { Breadcrumb, Col, Collapse, CollapseProps, Empty, Flex, notification, Row, Spin, Table, Tag } from 'antd';
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import getDetailsApi from '../apis/get.details.api';
 import { renderText } from "../components/common";
 import { evaluationOptions, letterGradeOptions, StudentStatuses } from '../constants/general.constant';
@@ -226,6 +226,12 @@ const StudentGradePage = () => {
 
   return (
     <>
+      <Breadcrumb style={{ fontSize: '20px', paddingBottom: '10px' }}
+        items={[
+          { title: <Link to={`/students`}>Danh sách sinh viên</Link> },
+          { title: <span style={{ fontWeight: 'bold' }}>Chi tiết sinh viên</span> },
+        ]}
+      />
       {loadingScreen ? (
         <Spin indicator={< LoadingOutlined style={{ fontSize: 48 }} spin />} fullscreen />
       ) : (<>

@@ -17,13 +17,28 @@ export interface ICourseDTO extends Auditing {
   semester?: string;
 }
 
+export interface ICourseDTO{
+  courseTitle?: string;
+  credits?: number;
+  lecture?: string;
+  tutorialDiscussion?: string;
+  practical?: string;
+  laboratory?: string;
+  selfStudy?: string;
+  numberOfSessions?: string;
+  courseType?: string;
+  notes?: string;
+  status?: boolean;
+  semester?: string;
+}
+
 
 export interface ICourseFilter extends IPagingAndSortRequest {
   "courseCode.contains"?: string;
   "courseTitle.contains"?: string;
   "status.equals"?: boolean;
   "semester.contains"?: string;
-  "sort"?:string;
+  "sort"?: string;
 }
 
 export interface ICourseFacultyDTO extends Auditing {
@@ -35,7 +50,7 @@ export interface ICourseFacultyDTO extends Auditing {
 export interface ICourseFacultyFilter extends IPagingAndSortRequest {
   "facultiesId.equals"?: string;
   "courseId.equals"?: string;
-  "sort"?:string;
+  "sort"?: string;
 }
 //--------------------------teaches---------------------//
 export interface ITeacherDTO extends Auditing {
@@ -48,7 +63,20 @@ export interface ITeacherDTO extends Auditing {
   endDate?: string;
   position?: string;
   qualification?: string;
-  status?: string;
+  status?: boolean;
+  notes?: string;
+  faculties?: IFacultyDTO;
+}
+
+export interface ITeacherDTO extends Auditing {
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+  startDate?: string;
+  endDate?: string;
+  position?: string;
+  qualification?: string;
+  status?: boolean;
   notes?: string;
   faculties?: IFacultyDTO;
 }
@@ -59,7 +87,7 @@ export interface ITeacherFilter extends IPagingAndSortRequest {
   "position.equals"?: string;
   "qualification.equals"?: string;
   "facultiesId.equals"?: string;
-  "sort"?:string;
+  "sort"?: string;
 }
 
 //--------------------------student---------------------//
@@ -80,11 +108,28 @@ export interface IStudentDTO extends Auditing {
   faculties?: IFacultyDTO
 }
 
+export interface IStudentDTO {
+  id: number;
+  studentCode?: string;
+  fullName?: string;
+  dateOfBirth?: string;
+  gender?: 'M' | 'F' | string;
+  address?: string;
+  phoneNumber?: string;
+  email?: string;
+  notes?: string;
+  status?: string;
+  dateEnrollment?: string;
+  clasName?: string;
+  courseYear?: string;
+  faculties?: IFacultyDTO
+}
+
 export interface IStudentFilter extends IPagingAndSortRequest {
   "studentCode.contains"?: string;
   "phoneNumber.contains"?: string;
   "status.equals"?: string;
-  "sort"?:string;
+  "sort"?: string;
 }
 
 //--------------------------Faculty---------------------//
@@ -98,12 +143,13 @@ export interface IFacultyDTO extends Auditing {
   location?: string;
   notes?: string;
   parentId?: string;
+  status?:boolean;
 }
 
 export interface IFacultyFilter extends IPagingAndSortRequest {
   "facultyCode.contains"?: string;
   "facultyName.contains"?: string;
-  "sort"?:string;
+  "sort"?: string;
   // "status.equals"?: string;
 }
 
@@ -136,8 +182,8 @@ export interface IClassFilter extends IPagingAndSortRequest {
   "endDate.lessThanOrEqual"?: string | null;
   "status.equals"?: boolean;
   "teachersId.equals"?: string | null;
-  "courseId.equals"?:string;
-  "sort"?:string;
+  "courseId.equals"?: string;
+  "sort"?: string;
 }
 
 
@@ -156,7 +202,7 @@ export interface IClassRegistrationsFilter extends IPagingAndSortRequest {
   "classesId.equals"?: string;
   "teachersId.equals"?: string;
   "status.notIn"?: string[];
-  "sort"?:string;
+  "sort"?: string;
 }
 
 
@@ -185,7 +231,7 @@ export interface IGradeDTO {
 export interface IGradeFilter extends IPagingAndSortRequest {
   "classesId.equals"?: string | number | null;
   "status.equals"?: boolean;
-  "sort"?:string;
+  "sort"?: string;
 }
 
 
@@ -223,7 +269,7 @@ export interface IStatisticFilter {
   "status.equals"?: boolean;
   "type.equals"?: string;
   "academicYear.equals"?: string;
-  "sort"?:string;
+  "sort"?: string;
   // Thêm các filter khác nếu cần
 }
 

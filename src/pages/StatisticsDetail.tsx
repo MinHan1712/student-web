@@ -1,7 +1,8 @@
-import { Col, Empty, Flex, notification, Pagination, Row, Select, Table, Tag } from "antd";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Col, Empty, Flex, notification, Pagination, Row, Select, Table, Tag } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import getApi from "../apis/get.api";
 import getDetailsApi from "../apis/get.details.api";
 import { renderText } from "../components/common";
@@ -9,6 +10,8 @@ import { selectPageSize, StudentStatuses, typeOptions } from "../constants/gener
 import { IResponseN } from "../interfaces/common";
 import { IStatisticDetailDTO, IStatisticDTO } from "../interfaces/course";
 import { AxiosError } from "axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 const StaticDetails: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,7 +42,7 @@ const StaticDetails: React.FC = () => {
     setLoading(true);
     try {
       const response = await getDetailsApi.getStatistic(idClass);
-     
+
       setStatistics(response);
     } catch (err) {
       const error = err as AxiosError;
@@ -61,7 +64,7 @@ const StaticDetails: React.FC = () => {
     try {
       const fullQuery = toQueryString(detailStatisticsReq);
       const response = await getApi.getStatisticsDetail(fullQuery);
-      
+
       setDetailStatistics(response);
     } catch (err) {
       const error = err as AxiosError;
@@ -143,9 +146,17 @@ const StaticDetails: React.FC = () => {
     },
   ];
 
+  const extra1Columns = [
+    {
+      title: "Điểm",
+      dataIndex: "score",
+      key: "score",
+    },
+  ];
+
   const columns = statistics.type === 'Scholarship'
     ? [...baseColumns.slice(0, 4), ...extraColumns, ...baseColumns.slice(4)]
-    : baseColumns;
+    : (statistics.type === 'Retake' ? [...baseColumns.slice(0, 4), ...extra1Columns, ...baseColumns.slice(4)] : baseColumns);
 
   const scholarshipFields = [
     { label: "Mã thống kê", value: statistics?.statisticsCode },
@@ -161,11 +172,90 @@ const StaticDetails: React.FC = () => {
     { label: "Ngày sửa cuối", value: dayjs(statistics?.lastModifiedDate).format("DD/MM/YYYY HH:mm") }
   ]
 
+  const handleExportExcel = () => {
+    if (!detailStatistics?.data) return;
+
+    // ===== Thông tin thống kê header (1 dòng) =====
+    const infoHeader = [
+      ["Mã thống kê", statistics?.statisticsCode || ""],
+      ["Năm học", statistics?.academicYear || ""],
+      ["Loại", typeOptions.find(opt => opt.value === statistics?.type)?.label || ""],
+      ["Ghi chú", statistics?.notes || ""],
+      ["Trạng thái", statistics?.status ? "Hoạt động" : "Không hoạt động"],
+      ["Người tạo", statistics?.createdBy || ""],
+      ["Ngày tạo", dayjs(statistics?.createdDate).format("DD/MM/YYYY HH:mm")],
+      ["Người sửa cuối", statistics?.lastModifiedBy || ""],
+      ["Ngày sửa cuối", dayjs(statistics?.lastModifiedDate).format("DD/MM/YYYY HH:mm")]
+    ];
+
+    // ===== Dữ liệu sinh viên =====
+    const studentData = detailStatistics.data.map((item) => ({
+      "Mã sinh viên": item.student?.studentCode || "",
+      "Họ và tên": item.student?.fullName || "",
+      "Lớp": item.student?.clasName || "",
+      "Khóa": item.student?.courseYear || "",
+      ...(statistics.type === "Scholarship" && {
+        "Tiền học bổng": item.totalScholarship ?? "",
+        "Điểm": item.score ?? "",
+      }),
+      ...(statistics.type === "Retake" && {
+        "Điểm": item.score ?? "",
+      }),
+      "Năm học": item.statistics?.academicYear || "",
+      "Trạng thái sinh viên":
+        StudentStatuses.find((x) => x.value === item.student?.status)?.label ||
+        item.student?.status ||
+        "",
+      "Ghi chú": item.notes || "",
+    }));
+
+    // 3. Tạo sheet và chèn dữ liệu
+    const worksheet = XLSX.utils.aoa_to_sheet(infoHeader);
+
+    // Tạo khoảng trống giữa info và danh sách
+    const emptyRowIndex = infoHeader.length + 2;
+
+    // Thêm danh sách sinh viên bắt đầu từ hàng tiếp theo
+    XLSX.utils.sheet_add_json(worksheet, studentData, {
+      origin: `A${emptyRowIndex}`,
+      skipHeader: false, // để thêm header cho danh sách sinh viên
+    });
+
+    // 4. Tạo workbook và export
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Chi tiết thống kê");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(blob, `ChiTietThongKe_${statistics.statisticsCode}.xlsx`);
+  };
+
+
   return (
     <>
+      <Breadcrumb style={{ fontSize: '20px', paddingBottom: '10px' }}
+        items={[
+          {
+            title: <Link to={`/statistic`}>Danh sách thống kê</Link>,
+          },
+          {
+            title: <span style={{ fontWeight: 'bold' }}>Chi tiết thống kê</span>,
+          },
+        ]}
+      />
       <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
         <Flex gap="middle" justify="flex-start" align={'center'} style={{ width: '100%' }}>
           <h3 className="title">Chi tiết thống kê {statistics.statisticsCode} - <span style={{ color: `${typeOptions.find((x) => x.value == statistics.type)?.color || 'black'}` }}>{typeOptions.find((x) => x.value == statistics.type)?.label || ""}</span></h3>
+          <Button
+            className="button btn-add d-flex flex-row justify-content-center align-content-center"
+            type="primary"
+            onClick={() => { handleExportExcel() }}>
+            <PlusCircleOutlined style={{ verticalAlign: "baseline" }} />
+            <span>Xuất Excel</span>
+          </Button>
         </Flex>
         <Row style={{ margin: "5px", width: "100%", background: "white", padding: "10px", borderRadius: "5px" }}
           className="d-flex ant-row-flex-space-around">

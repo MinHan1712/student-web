@@ -1,5 +1,5 @@
-import { BellOutlined, HomeOutlined, MenuOutlined, ProfileOutlined } from '@ant-design/icons';
-import { Button, Flex, Layout } from 'antd';
+import { BellOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ProfileOutlined } from '@ant-design/icons';
+import { Button, Flex, Layout, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Header } from 'antd/es/layout/layout';
 
@@ -31,9 +31,14 @@ const HeaderLayout = (props: any) => {
               marginLeft: props.collapsed ? 20 : 0
             }} onClick={props.toggleCollapsed} />
             {
-              props.collapsed ? "" : <div style={{fontSize: '20px', fontWeight: 'bold'}}>TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI</div>
+              props.collapsed ? "" : <div style={{ fontSize: '20px', fontWeight: 'bold' }}>TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI</div>
             }
           </Flex>
+          <LogoutOutlined style={{ fontSize: '20px' }} onClick={() => {
+            localStorage.removeItem('token');
+            message.success('Đang xuất thành công!');
+            navigate('/login');
+          }} />
         </Flex>
       </Header >
     </>

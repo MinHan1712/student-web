@@ -1,9 +1,9 @@
-import { PlusCircleOutlined } from "@ant-design/icons";
-import { Button, Empty, Flex, Modal, notification, Pagination, Select, Table, Tag } from "antd";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Button, Empty, Flex, Modal, notification, Pagination, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api"; // Giả sử có phương thức getClasses
 import postApi from "../apis/post.api";
 import ClassesCreate from "../components/create/ClassesCreate";
@@ -32,6 +32,11 @@ const Classes: React.FC = () => {
       title: "Mã lớp",
       dataIndex: "classCode",
       key: "classCode",
+      render: (_, record) => (
+        <Link to={`/classes/details?id=${record.id}`}>
+          {record.classCode}
+        </Link>
+      ),
     },
     {
       title: "Tên lớp",
@@ -109,14 +114,15 @@ const Classes: React.FC = () => {
       dataIndex: "status",
       key: "status",
       render: (_, record) => (
-        <Button
-          color="danger" variant="solid"
-          style={{ marginRight: '8px' }}
-          disabled={!record?.status}
-          onClick={() => confirmDelete(record.id)}
-        >
-          Hủy
-        </Button>
+        <Tooltip title={!record.status  ? "Không thể xóa bản ghi không đang hoạt động" : "Xóa"}>
+          <Button
+            type="text"
+            icon={<DeleteOutlined style={{ fontSize: '20px' }} />}
+            onClick={() => confirmDelete(record.id)}
+            disabled={!record.status} // disable khi record.status = true
+            danger
+          />
+        </Tooltip>
       ),
     },
   ];
@@ -277,13 +283,7 @@ const Classes: React.FC = () => {
           dataSource={classes?.data}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
-          onRow={(record) => {
-            return {
-              onDoubleClick: () => {
-                navigate(`/classes/details?id=${record.id}`);
-              },
-            };
-          }}
+
         />
         <Flex gap="middle" justify="space-between" align="center" style={{ paddingTop: "10px" }}>
           <Flex gap="middle" align="center">

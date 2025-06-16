@@ -94,7 +94,7 @@ const ConductScoreManager: React.FC = () => {
   const getListFaculty = async () => {
     setLoading(true);
     try {
-      const fullQuery = toQueryString({ page: 0, size: 10000 });
+      const fullQuery = toQueryString({ page: 0, size: 10000, "status.equals": true });
       const response = await getApi.getFaculties(fullQuery);
       setListFaculty(response.data);
     } catch (err) {
@@ -238,6 +238,8 @@ const ConductScoreManager: React.FC = () => {
           <InputNumber
             style={{ width: '50%' }}
             value={record.score}
+            min={0}
+            max={100}
             onChange={(value) => {
               const score = value || 0;
               const evaluation = getEvaluation(score);
@@ -255,7 +257,7 @@ const ConductScoreManager: React.FC = () => {
       dataIndex: 'evaluation',
       key: 'evaluation',
       render: (_, record) => (
-        <span>{evaluationLabelMap[record.evaluation] || ''}</span>
+        <span>{record.score == null || isNaN(record.score) ? '' : evaluationLabelMap[record.evaluation] || ''}</span>
       ),
     }
   ];

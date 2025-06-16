@@ -1,4 +1,4 @@
-import { CaretRightOutlined, LoadingOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { CaretRightOutlined, DeleteOutlined, LoadingOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { Button, Col, Collapse, CollapseProps, DatePicker, Empty, Flex, Form, Input, Modal, notification, Row, Select, Spin, Table, Tag, theme } from "antd";
 import dayjs from 'dayjs';
 import { CSSProperties, useEffect, useState } from "react";
@@ -268,12 +268,11 @@ const ClassManager: React.FC = () => {
       },
     },
     {
-      title: "Thao tác",
-      key: "action",
+      title: "Xóa",
+      dataIndex: "status",
+      key: "status",
       render: (_: any, record: IClassRegistrationsDTO) => (
-        <Button
-          danger
-          disabled={!isEditingStudents || loading}
+        <DeleteOutlined className="delete-icon" style={{ fontWeight: 'bold', fontSize: '20px' }}
           onClick={() => {
             const studentId = record.student?.id || 0;
             if (!studentId) return;
@@ -302,13 +301,9 @@ const ClassManager: React.FC = () => {
                 studentIdRemove: updatedStudentIdRemove,
               };
             });
-          }}
-        >
-          Xoá
-        </Button>
+          }} />
       ),
     }
-
   ];
   const confirmCreateInvExport = (value: IClassUpdateDTO) => {
     confirm({

@@ -1,21 +1,23 @@
-import { Flex, notification, Pagination, Select, Table, Tag } from "antd";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Button, Flex, Modal, notification, Pagination, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api";
+import putApi from "../apis/put.api";
 import TeachesSearch from "../components/filter/TeachesSearch";
-import { PositionTeaches, QualificationTeaches, selectPageSize, StatusType } from "../constants/general.constant";
+import { handleError, PositionTeaches, QualificationTeaches, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { ITeacherDTO, ITeacherFilter } from "../interfaces/course";
-import { AxiosError } from "axios";
-
+import TeacherCreate from "../components/create/TeachesCreate";
 const Teachers: React.FC = () => {
   const navigate = useNavigate();
   const [teachers, setTeachers] = useState<IResponseN<ITeacherDTO[]>>();
   const [loading, setLoading] = useState<boolean>(false);
   const [isReload, setIsReload] = useState(false);
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
+  const [openFormCreate, setOpenFormCreate] = useState(false);
   const [teachersReq, setTeachersReq] = useState<ITeacherFilter>({
     page: 0,
     size: 20,
@@ -25,7 +27,11 @@ const Teachers: React.FC = () => {
     {
       title: "Mã giảng viên",
       dataIndex: "teachersCode",
-      key: "teachersCode",
+      render: (_, record) => (
+        <Link to={`/teaches/details?id=${record.id}`}>
+          {record.teachersCode}
+        </Link>
+      ),
     },
     {
       title: "Tên giảng viên",
@@ -89,8 +95,64 @@ const Teachers: React.FC = () => {
       key: "notes",
       render: (text) => text || "-",
     },
+    {
+      title: "Xóa",
+      dataIndex: "status",
+      key: "status",
+      render: (_, record) => (
+        <Tooltip title={!record.status  ? "Không thể xóa bản ghi không đang hoạt động" : "Xóa"}>
+          <Button
+            type="text"
+            icon={<DeleteOutlined style={{ fontSize: '20px' }} />}
+            onClick={() => confirmDelete(record.id)}
+            disabled={!record.status} // disable khi record.status = true
+            danger
+          />
+        </Tooltip>
+      ),
+    },
+
   ];
 
+  const { confirm } = Modal;
+  const confirmDelete = (id: number) => {
+    confirm({
+      title: 'Bạn có đồng ý xóa không?',
+      okText: "Đồng ý",
+      cancelText: 'Hủy',
+      async onOk() {
+        return new Promise<void>((resolve, reject) => {
+          deleteItem(id)
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              notification['error']({
+                message: "Lỗi",
+                description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+              });
+              resolve();
+            });
+        });
+      },
+      onCancel() { },
+    });
+  }
+
+  const deleteItem = async (id: number) => {
+    try {
+      await putApi.putTeaches(id, { "id": id, "status": false, "lastModifiedDate": dayjs().toDate().toISOString() });
+      notification.success({
+        message: "Thông báo",
+        description: "Xóa giảng viên thành công",
+      });
+      getList();
+    } catch (err: any) {
+      handleError(err, navigate);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toQueryString = (params: Record<string, any>): string => {
     const cleanedParams = Object.fromEntries(
@@ -104,19 +166,11 @@ const Teachers: React.FC = () => {
     try {
       const fullQuery = toQueryString(teachersReq);
       const response = await getApi.getTeachers(fullQuery);
-     
+
       setTeachers(response);
 
     } catch (err) {
-      const error = err as AxiosError;
-      if (error.response?.status === 401) {
-        notification.error({
-          message: "Lỗi",
-          description: "Hết phiên đăng nhập",
-        });
-        navigate('/login');
-        return;
-      }
+      handleError(err, navigate);
     } finally { setLoading(false); }
   }
 
@@ -139,6 +193,13 @@ const Teachers: React.FC = () => {
       <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
         <Flex gap="middle" justify="flex-start" align={'center'} style={{ width: '100%' }}>
           <h3 className="title">Danh sách giảng viên</h3>
+          <Button
+            className="button btn-add d-flex flex-row justify-content-center align-content-center"
+            type="primary"
+            onClick={() => setOpenFormCreate(true)}>
+            <PlusCircleOutlined style={{ verticalAlign: "baseline" }} />
+            <span>Thêm mới</span>
+          </Button>
         </Flex>
         <TeachesSearch req={teachersReq} triggerFormEvent={triggerFormEvent} />
       </Flex>
@@ -164,13 +225,6 @@ const Teachers: React.FC = () => {
           loading={loading}
           dataSource={teachers?.data}
           pagination={false}
-          onRow={(record) => {
-            return {
-              onDoubleClick: () => {
-                navigate(`/teaches/details?id=${record.id}`);
-              },
-            };
-          }}
         />
         <Flex gap="middle" justify="space-between" align={'center'} style={{ paddingTop: '10px' }}>
           <Flex gap="middle" justify="flex-start" align={'center'}>
@@ -206,6 +260,13 @@ const Teachers: React.FC = () => {
         </Flex>
 
       </div>
+      <TeacherCreate
+        open={openFormCreate}
+        onCancel={() => {
+          setOpenFormCreate(false);
+          getList();
+        }}
+      />
     </>
   );
 };
