@@ -548,15 +548,15 @@ p {
   justify-content: center;
 }
 
-.btn-add>i,
-.btn-add>span {
+.btn-add > i,
+.btn-add > span {
   display: inline-block;
   pointer-events: none;
   line-height: 1;
   transition: margin-left 0.3s cubic-bezier(0.645, 0.045, 0.0355, 1);
 }
 
-.btn-add>.anticon+span {
+.btn-add > .anticon + span {
   margin-left: 8px;
 }
 
@@ -607,7 +607,7 @@ p {
   list-style: none;
 }
 
-.header-nav>ul {
+.header-nav > ul {
   margin: 0;
   padding: 0;
 }
@@ -776,7 +776,6 @@ p {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 30px;
@@ -790,7 +789,6 @@ p {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;
@@ -1029,7 +1027,7 @@ p {
 }
 
 /* News & Updates */
-.dashboard .news .post-item+.post-item {
+.dashboard .news .post-item + .post-item {
   margin-top: 15px;
 }
 
@@ -1657,7 +1655,8 @@ textarea[disabled],
   margin: 0;
 }
 
-:where(.css-dev-only-do-not-override-yp8pcc).ant-form-horizontal .ant-form-item-control {
+:where(.css-dev-only-do-not-override-yp8pcc).ant-form-horizontal
+  .ant-form-item-control {
   flex: 0 0 auto;
   width: 100%;
 }
@@ -1753,7 +1752,7 @@ textarea[disabled],
   border-radius: 0 0 4px 4px;
 }
 
-:where(.css-dev-only-do-not-override-yp8pcc).ant-tabs>.ant-tabs-nav {
+:where(.css-dev-only-do-not-override-yp8pcc).ant-tabs > .ant-tabs-nav {
   margin: 0;
 }
 
@@ -1791,12 +1790,12 @@ textarea[disabled],
   margin: 4px 20px 10px 0px;
 } */
 
-table .ant-table-thead>tr:hover,
+table .ant-table-thead > tr:hover,
 .table-container .ant-table-thead {
   background-color: #012970;
 }
 
-.table-container .ant-table-thead>tr>th {
+.table-container .ant-table-thead > tr > th {
   color: #fff;
   background: #012970;
   border-bottom: 1px solid #bbb;
@@ -1806,7 +1805,7 @@ table .ant-table-thead>tr:hover,
   background-color: transparent;
 }
 
-.table-container .ant-table-thead>tr>td {
+.table-container .ant-table-thead > tr > td {
   color: #fff;
   background: #012970;
   border-bottom: 1px solid #bbb;
@@ -1817,8 +1816,8 @@ table .ant-table-thead>tr:hover,
   font-weight: 500;
 }
 
-.table-container .ant-table-thead>tr>th:first-child,
-.table-container .ant-table-tbody>tr>td:first-child {
+.table-container .ant-table-thead > tr > th:first-child,
+.table-container .ant-table-tbody > tr > td:first-child {
   padding-left: 6px;
 }
 
@@ -1841,16 +1840,16 @@ table .ant-table-thead>tr:hover,
   width: 100%;
 }
 
-.table-container .ant-table-thead>tr>th:last-child,
-.table-container .ant-table-tbody>tr>td:last-child {
+.table-container .ant-table-thead > tr > th:last-child,
+.table-container .ant-table-tbody > tr > td:last-child {
   padding-right: 6px;
 }
 
-.table-container .ant-table-thead>tr>th::before {
+.table-container .ant-table-thead > tr > th::before {
   display: none;
 }
 
-.table-container .ant-table-tbody>tr>td {
+.table-container .ant-table-tbody > tr > td {
   border-bottom: 1px solid #bbb;
   font-size: 14px;
   height: 40px;
@@ -1859,9 +1858,9 @@ table .ant-table-thead>tr:hover,
   font-weight: 500;
 }
 
-.table-container .ant-table-tbody>tr>td .ant-input,
-.table-container .ant-table-tbody>tr>td .ant-select,
-.table-container .ant-table-tbody>tr>td .ant-input-number {
+.table-container .ant-table-tbody > tr > td .ant-input,
+.table-container .ant-table-tbody > tr > td .ant-select,
+.table-container .ant-table-tbody > tr > td .ant-input-number {
   width: 100% !important;
 }
 
@@ -1915,7 +1914,8 @@ table .ant-table-thead>tr:hover,
   padding: 0;
 }
 
-:where(.css-dev-only-do-not-override-yp8pcc).ant-layout.ant-layout-has-sider>.ant-layout {
+:where(.css-dev-only-do-not-override-yp8pcc).ant-layout.ant-layout-has-sider
+  > .ant-layout {
   width: 100%;
 }
 
@@ -2039,7 +2039,6 @@ td {
   background: transparent !important;
   border-color: #fff;
 }
-
 
 table .ant-select,
 table .ant-input {
@@ -2170,8 +2169,8 @@ table .ant-input {
   border: 1px solid #000 !important;
 } */
 
-.ant-table-small>.ant-table-content .ant-table-placeholder,
-.ant-table-small>.ant-table-content .ant-table-row:last-child td {
+.ant-table-small > .ant-table-content .ant-table-placeholder,
+.ant-table-small > .ant-table-content .ant-table-row:last-child td {
   border-bottom: 0;
 }
 
@@ -2187,4 +2186,14 @@ table .ant-input {
   border-top: 1px solid #e8e8e8;
   border-bottom: 1px solid #e8e8e8;
   border-radius: 0 0 4px 4px;
+}
+
+.delete-icon {
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.delete-icon:hover {
+  color: red;
 }

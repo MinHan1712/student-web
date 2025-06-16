@@ -55,7 +55,7 @@ const ClassesCreate = (props: IProviderInformationProps) => {
         //   case 200:
         notification['success']({
           message: "Thông báo",
-          description: 'Cập nhập điểm thành công',
+          description: 'Thêm lớp học phần thành công',
         });
         form.resetFields();
         props.onCancel();
@@ -130,7 +130,6 @@ const ClassesCreate = (props: IProviderInformationProps) => {
       setTeachers(response);
     } catch (err) {
       const error = err as AxiosError;
-
       if (error.response?.status === 401) {
         notification.error({
           message: "Lỗi",

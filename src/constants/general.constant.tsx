@@ -1,3 +1,7 @@
+import { notification } from "antd";
+import { AxiosError } from "axios";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+
 export const KEY_LOCAL_STORAGE = {
   AUTHEN: "authen"
 }
@@ -165,6 +169,7 @@ export const StudentStatuses = [
   { value: "Withdrawn", label: "Thôi học", color: "red" },
   { value: "Graduated", label: "Đã tốt nghiệp", color: "green" },
   { value: "Deferment", label: "Tạm hoãn", color: "orange" },
+  { value: "Deleted", label: "Đã xóa", color: "gray" },
 ];
 
 export const ClassTypes = [
@@ -202,16 +207,16 @@ export const CourseStatuses = [
 
 
 export const letterGradeOptions = [
-  { value: 'A', label: 'A - Xuất sắc' },
-  { value: 'APlus', label: 'A+ - Xuất sắc vượt trội' },
-  { value: 'B', label: 'B - Giỏi' },
-  { value: 'BPlus', label: 'B+ - Giỏi khá' },
-  { value: 'C', label: 'C - Khá' },
-  { value: 'CPlus', label: 'C+ - Khá trung bình' },
-  { value: 'D', label: 'D - Trung bình' },
-  { value: 'DPlus', label: 'D+ - Trung bình yếu' },
-  { value: 'F', label: 'F - Rớt' },
-  { value: 'FPlus', label: 'F+ - Rớt (có thể học cải thiện)' },
+  { value: 'A', label: 'A' },
+  { value: 'APlus', label: 'A+' },
+  { value: 'B', label: 'B' },
+  { value: 'BPlus', label: 'B+' },
+  { value: 'C', label: 'C' },
+  { value: 'CPlus', label: 'C+' },
+  { value: 'D', label: 'D' },
+  { value: 'DPlus', label: 'D+' },
+  { value: 'F', label: 'F' },
+  { value: 'FPlus', label: 'F+' },
 ];
 
 export const evaluationOptions = [
@@ -249,6 +254,7 @@ export const typeOptions = [
   { value: 'Scholarship', label: 'Học bổng', color: '#4CAF50' },    // Màu xanh lá
   { value: 'Warning', label: 'Cảnh báo', color: '#FF9800' },        // Màu cam
   { value: 'Graduation', label: 'Tốt nghiệp', color: '#2196F3' },   // Màu xanh dương
+  { value: 'Retake', label: 'Học lại', color: '#F44336' }
 ];
 
 export const genderLabels: Record<string, string> = {
@@ -261,3 +267,19 @@ export const courseTypeOptions = [
   { value: "Elective", label: 'Tự chọn', color: '#03A9F4' },
   { value: "Mandatory", label: 'Bắt buộc', color: '#F44336' },
 ];
+
+export const handleError = (err: any, navigate: NavigateFunction) => {
+  const error = err as AxiosError;
+  if (err.status === 401) {
+    notification.error({
+      message: "Lỗi",
+      description: "Hết phiên đăng nhập",
+    });
+    navigate("/login");
+  } else {
+    notification.error({
+      message: "Lỗi",
+      description: "Có lỗi xảy ra, vui lòng thử lại",
+    });
+  }
+};

@@ -3,12 +3,12 @@ import { Button, Empty, Flex, Form, notification, Pagination, Select, Table, Tag
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api";
 import ReportCreateModal from "../components/create/ReportCreate";
 import { formItemLayout, selectPageSize, StatusType, typeOptions } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
-import { IFacultyDTO, IMasterDataDTO, IStatisticDTO, IStatisticFilter } from "../interfaces/course";
+import { IClassDTO, IFacultyDTO, IMasterDataDTO, IStatisticDTO, IStatisticFilter } from "../interfaces/course";
 import { AxiosError } from "axios";
 const StatisticList: React.FC = () => {
   const [form] = Form.useForm<IStatisticFilter>();
@@ -20,11 +20,17 @@ const StatisticList: React.FC = () => {
   const navigate = useNavigate();
   const [listFaculty, setListFaculty] = useState<IFacultyDTO[]>([]);
   const [openReportModal, setOpenReportModal] = useState(false);
+  const [classes, setClasses] = useState<IClassDTO[]>([]);
   const columns: ColumnsType<IStatisticDTO> = [
     {
       title: "Mã thống kê",
       dataIndex: "statisticsCode",
       key: "statisticsCode",
+      render: (_, record) => (
+        <Link to={`/statistic/details?id=${record.id}`}>
+          {record.statisticsCode}
+        </Link>
+      ),
     },
     {
       title: "Năm học",
@@ -71,21 +77,48 @@ const StatisticList: React.FC = () => {
 
   const getListFaculty = async () => {
     try {
-      const fullQuery = toQueryString({ page: 0, size: 20, "sort": "lastModifiedDate,desc" });
+      const fullQuery = toQueryString({ page: 0, size: 20, "sort": "lastModifiedDate,desc", "status.equals": true });
       const response = await getApi.getFaculties(fullQuery);
-    
+
       setListFaculty(response.data || []);
     } catch (err) {
       const error = err as AxiosError;
-       if (error.response?.status === 401) {
-            notification.error({
-              message: "Lỗi",
-              description: "Hết phiên đăng nhập",
-            });
-            navigate('/login');
-            return;
-          }
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
+    }
+  };
+
+  const getListClass = async () => {
+    setLoading(true);
+    try {
+      const fullQuery = toQueryString({
+        page: 0,
+        size: 10020,
+        "status.equals": true,
+        "sort": "lastModifiedDate,desc"
+      });
+      const response = await getApi.getClasses(fullQuery);
+
+      setClasses(response.data);
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,18 +134,18 @@ const StatisticList: React.FC = () => {
     try {
       const fullQuery = toQueryString(filterReq);
       const response = await getApi.getStatic(fullQuery);
-      
+
       setStatistics(response);
     } catch (err) {
-     const error = err as AxiosError;
-       if (error.response?.status === 401) {
-            notification.error({
-              message: "Lỗi",
-              description: "Hết phiên đăng nhập",
-            });
-            navigate('/login');
-            return;
-          }
+      const error = err as AxiosError;
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -124,18 +157,18 @@ const StatisticList: React.FC = () => {
       const key = { "key.equals": "ACADEMIC", page: 0, size: 100000 }
       const fullQuery = toQueryString(key);
       const response = await getApi.getMasterData(fullQuery);
-     
+
       setAcademicYear(response.data || []);
     } catch (err) {
       const error = err as AxiosError;
-       if (error.response?.status === 401) {
-            notification.error({
-              message: "Lỗi",
-              description: "Hết phiên đăng nhập",
-            });
-            navigate('/login');
-            return;
-          }
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -144,6 +177,7 @@ const StatisticList: React.FC = () => {
   useEffect(() => {
     getMasterData();
     getListFaculty();
+    getListClass();
   }, []);
 
   useEffect(() => {
@@ -282,13 +316,6 @@ const StatisticList: React.FC = () => {
           dataSource={statistics?.data}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
-          onRow={(record) => {
-            return {
-              onDoubleClick: () => {
-                navigate(`/statistic/details?id=${record.id}`);
-              },
-            };
-          }}
         />
         <Flex gap="middle" justify="space-between" align="center" style={{ paddingTop: "10px" }}>
           <Flex gap="middle" align="center">
@@ -328,6 +355,7 @@ const StatisticList: React.FC = () => {
         academicYearM={academicYearM}
         listFaculty={listFaculty}
         onCancel={() => setOpenReportModal(false)}
+        classes={classes}
         onCreate={() => {
           try {
             getList();

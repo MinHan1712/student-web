@@ -1,22 +1,28 @@
-import { Empty, Flex, notification, Pagination, Select, Tag } from "antd";
+import {
+  DeleteOutlined,
+  PlusCircleOutlined
+} from "@ant-design/icons";
+import { Button, Empty, Flex, Modal, notification, Pagination, Select, Tag, Tooltip } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
+import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getApi from "../apis/get.api";
 import '../assets/css/style.css';
+import CourseCreate from "../components/create/courseCreate";
 import CourseSearch from "../components/filter/CourseSearch";
-import { courseTypeOptions, selectPageSize, StatusType } from "../constants/general.constant";
+import { courseTypeOptions, handleError, selectPageSize, StatusType } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { ICourseDTO, ICourseFilter } from "../interfaces/course";
-import { AxiosError } from "axios";
-
+import putApi from "../apis/put.api";
+import dayjs from "dayjs";
 const Course: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pageSize, setPageSize] = useState(Number(selectPageSize[0].value));
   const [isReload, setIsReload] = useState(false);
   const navigate = useNavigate();
   const [courseRes, setCourseRes] = useState<IResponseN<ICourseDTO[]>>();
-
+  const [openFormCreate, setOpenFormCreate] = useState(false);
   const [courseReq, setCourseReq] = useState<ICourseFilter>({
     page: 0,
     size: 20,
@@ -38,14 +44,14 @@ const Course: React.FC = () => {
 
     } catch (err) {
       const error = err as AxiosError;
-       if (error.response?.status === 401) {
-            notification.error({
-              message: "Lỗi",
-              description: "Hết phiên đăng nhập",
-            });
-            navigate('/login');
-            return;
-          }
+      if (error.response?.status === 401) {
+        notification.error({
+          message: "Lỗi",
+          description: "Hết phiên đăng nhập",
+        });
+        navigate('/login');
+        return;
+      }
     } finally { setLoading(false); }
   }
 
@@ -64,10 +70,10 @@ const Course: React.FC = () => {
       key: "courseCode",
       width: "10%",
       align: "left",
-      render: (text) => (
-        <div className="style-text-limit-number-line2">
-          <span>{text}</span>
-        </div>
+      render: (_, record) => (
+        <Link to={`/course/details?id=${record.id}`}>
+          {record.courseCode}
+        </Link>
       ),
     },
     {
@@ -172,13 +178,23 @@ const Course: React.FC = () => {
       align: "center",
       render: (text) => <span>{text}</span>,
     },
+    {
+      title: "Xóa",
+      dataIndex: "status",
+      key: "status",
+      render: (_, record) => (
+        <Tooltip title={!record.status ? "Không thể xóa bản ghi không đang hoạt động" : "Xóa"}>
+          <Button
+            type="text"
+            icon={<DeleteOutlined style={{ fontSize: '20px' }} />}
+            onClick={() => confirmDelete(record.id)}
+            disabled={!record.status} // disable khi record.status = true
+            danger
+          />
+        </Tooltip>
+      ),
+    },
   ];
-
-  let locale = {
-    emptyText: (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Trống" />
-    )
-  };
 
   useEffect(() => {
     setIsReload(false);
@@ -186,11 +202,58 @@ const Course: React.FC = () => {
     console.log('request', courseReq);
   }, [courseReq, isReload])
 
+  const { confirm } = Modal;
+  const confirmDelete = (id: string) => {
+    confirm({
+      title: 'Bạn có đồng ý xóa không?',
+      okText: "Đồng ý",
+      cancelText: 'Hủy',
+      async onOk() {
+        return new Promise<void>((resolve, reject) => {
+          deleteItem(id)
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              notification['error']({
+                message: "Lỗi",
+                description: 'Có một lỗi nào đó xảy ra, vui lòng thử lại',
+              });
+              resolve();
+            });
+        });
+      },
+      onCancel() { },
+    });
+  }
+
+  const deleteItem = async (id: string) => {
+    try {
+      await putApi.putCourses(id, { "id": id, "status": false, "lastModifiedDate": dayjs().toDate().toISOString() });
+      notification.success({
+        message: "Thông báo",
+        description: "Xóa môn học thành công",
+      });
+      getListCourse();
+    } catch (err: any) {
+      handleError(err, navigate);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Flex gap="middle" vertical justify="space-between" align={'center'} style={{ width: '100%' }} >
         <Flex gap="middle" justify="flex-start" align={'center'} style={{ width: '100%' }}>
           <h3 className="title">Môn học</h3>
+          <Button
+            className="button btn-add d-flex flex-row justify-content-center align-content-center"
+            type="primary"
+            onClick={() => { setOpenFormCreate(true) }}>
+            <PlusCircleOutlined style={{ verticalAlign: "baseline" }} />
+            <span>Thêm mới</span>
+          </Button>
         </Flex>
         <CourseSearch courseReq={courseReq} triggerFormEvent={triggerFormEvent} />
       </Flex>
@@ -211,13 +274,6 @@ const Course: React.FC = () => {
                 );
               },
             },
-          }}
-          onRow={(record) => {
-            return {
-              onDoubleClick: () => {
-                navigate(`/course/details?id=${record.id}`);
-              },
-            };
           }}
           columns={courseColumns}
           loading={loading}
@@ -258,6 +314,13 @@ const Course: React.FC = () => {
         </Flex>
 
       </div>
+      <CourseCreate
+        getList={getListCourse}
+        open={openFormCreate}
+        onCancel={() => {
+          setOpenFormCreate(false);
+        }}
+      />
     </>
   );
 };

@@ -7,7 +7,7 @@ import getApi from "../apis/get.api";
 import postApi from "../apis/post.api";
 import '../assets/css/style.css';
 import { renderText } from "../components/common";
-import { courseTypeOptions, QualificationTeaches } from "../constants/general.constant";
+import { courseTypeOptions, letterGradeOptions, QualificationTeaches } from "../constants/general.constant";
 import { IResponseN } from "../interfaces/common";
 import { IClassDTO, IClassFilter, IGradeDTO, IGradeFilter } from "../interfaces/course";
 import { AxiosError } from "axios";
@@ -50,7 +50,7 @@ const GradeScoreManager: React.FC = () => {
     try {
       const fullQuery = toQueryString(classReq);
       const response = await getApi.getClasses(fullQuery);
-      
+
       setClasses(response);
     } catch (err) {
       const error = err as AxiosError;
@@ -72,7 +72,7 @@ const GradeScoreManager: React.FC = () => {
     try {
       const fullQuery = toQueryString(gradeReq);
       const response = await getApi.getGrades(fullQuery);
-      
+
       setListGrade(response.data || []);
     } catch (err) {
       const error = err as AxiosError;
@@ -239,17 +239,19 @@ const GradeScoreManager: React.FC = () => {
       title: 'Điểm chữ',
       dataIndex: 'letterGrade',
       key: 'letterGrade',
-      render: (_, record) => (
-        <span>{letterGradeLabelMap[record.letterGrade] || ''}</span>
-      ),
+      render: (_, record) => {
+        const statusInfo = convertScore10To4AndEval(record.score10);
+        return <span>{record.score10 == null || isNaN(record.score10) ? '' : letterGradeOptions.find(x => x.value === statusInfo.letterGrade)?.label || statusInfo.letterGrade}</span>
+      },
     },
     {
       title: 'Đánh giá',
       dataIndex: 'evaluation',
       key: 'evaluation',
-      render: (_, record) => (
-        <span>{evaluationLabelMap[record.evaluation] || ''}</span>
-      ),
+      render: (_, record) => {
+        const statusInfo = convertScore10To4AndEval(record.score10);
+        return <span>{record.score10 == null || isNaN(record.score10) ? '' : statusInfo.evaluation}</span>
+      },
     },
     {
       title: 'Ghi chú',
@@ -300,36 +302,35 @@ const GradeScoreManager: React.FC = () => {
   };
 
   const convertScore10To4AndEval = (score10: number) => {
-    let score4: number;
-    let letterGrade: string;
-
+    let score4: number | null = null;
+    let letterGrade: string | null = null;
     if (score10 >= 9.5) {
       score4 = 4.0;
-      letterGrade = 'A+';
+      letterGrade = 'APlus';
     } else if (score10 >= 8.5) {
       score4 = 3.8;
       letterGrade = 'A';
     } else if (score10 >= 8.0) {
       score4 = 3.5;
-      letterGrade = 'B+';
+      letterGrade = 'BPlus';
     } else if (score10 >= 7.0) {
       score4 = 3.0;
       letterGrade = 'B';
     } else if (score10 >= 6.0) {
       score4 = 2.5;
-      letterGrade = 'C+';
+      letterGrade = 'CPlus';
     } else if (score10 >= 5.5) {
       score4 = 2.0;
       letterGrade = 'C';
     } else if (score10 >= 4.5) {
       score4 = 1.5;
-      letterGrade = 'D+';
+      letterGrade = 'DPlus';
     } else if (score10 >= 4.0) {
       score4 = 1.0;
       letterGrade = 'D';
     } else if (score10 >= 2.0) {
       score4 = 0.5;
-      letterGrade = 'F+';
+      letterGrade = 'FPlus';
     } else {
       score4 = 0.0;
       letterGrade = 'F';
